@@ -32,3 +32,4 @@ $RECYCLE.BIN/
 *.code-workspace
 
 .idea/
+.python
