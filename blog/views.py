@@ -24,7 +24,7 @@ def post_new(request):
             post.author = request.user
             post.published_date = timezone.now()
             post.save()
-            return redirect('post_list')
+            return redirect('post_detail')
     else:
         form = PostForm()
     return render(request, 'blog/post_edit.html', {'form': form})
