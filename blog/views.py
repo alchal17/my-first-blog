@@ -42,3 +42,11 @@ def post_edit(request, pk):
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
+
+def category_new(request):
+    if request.method == "POST":
+        form = CategoryForm(request.POST, instance=post)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.save()
+            return  redirect('post_list')
