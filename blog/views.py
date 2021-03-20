@@ -51,3 +51,14 @@ def category_new(request):
     else:
         form = CategoryForm()
     return render(request, 'blog/category_new.html', {'form': form})
+
+# def category_new2(request, pk):
+#     if request.method == "POST":
+#         form = CategoryForm(request.POST)
+#         if form.is_valid():
+#             category = form.save(commit=False)
+#             category.save()
+#             return redirect(f'post/{pk}/edit')
+#     else:
+#         form = CategoryForm()
+#     return render(request, 'blog/category_new.html', {'form': form})

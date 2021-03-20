@@ -1,13 +1,13 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<h2><a href="{% url 'category_new' %}" class="new-c">Добавить категорию</a></h2>
+<h2><a href="{% url 'category_new' %}" class="new-c">Add Category</a></h2>
 {% for post in posts %}
     <article class="post">
         <time class="date">
             {{ post.published_date }}
         </time>
-        <h3>{{ post.category }}</h3>>
+        <h3>Category: {{ post.category }}</h3>
         <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
         <p>{{ post.text|linebreaksbr }}</p>
     </article>
