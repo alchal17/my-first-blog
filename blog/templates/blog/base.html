@@ -12,12 +12,12 @@
           <div class="container">
               <h1><a href="/">First site</a></h1>
               {% if user.is_authenticated %}
-                    <a href="{% url 'post_new' %}" class="top-menu">
-                        {% include './icons/file-earmark-plus.svg' %}
-                    </a>
+              <a href="{% url 'post_new' %}" class="top-menu">
+                  {% include './icons/file-earmark-plus.svg' %}
+              </a>
               {% endif %}
           </div>
-        </header>
+        </header>>
         <main class="container">
             <div class="row">
                 <div class="col">

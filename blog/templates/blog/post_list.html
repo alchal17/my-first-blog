@@ -1,14 +1,15 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<h2><a href="{% url 'category_new'}">Добавить категорию</a></h2>
-    {% for post in posts %}
-        <article class="post">
-            <time class="date">
-                {{ post.published_date }}
-            </time>
-            <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
-            <p>{{ post.text|linebreaksbr }}</p>
-        </article>
-    {% endfor %}
+<h2><a href="{% url 'category_new' %}" class="new-c">Добавить категорию</a></h2>
+{% for post in posts %}
+    <article class="post">
+        <time class="date">
+            {{ post.published_date }}
+        </time>
+        <h3>{{ post.category }}</h3>>
+        <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
+        <p>{{ post.text|linebreaksbr }}</p>
+    </article>
+{% endfor %}
 {% endblock %}

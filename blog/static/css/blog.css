@@ -44,7 +44,7 @@ h4 {
 .top-menu,
 .top-menu:hover,
 .top-menu:visited {
-    color: #ffffff;
+    color: #FFA07A;
     float: right;
     font-size: 26pt;
     margin-right: 20px;
@@ -74,4 +74,9 @@ h4 {
 .btn-default:hover {
     color: #FFFFFF;
     background-color: #C25100;
+}
+
+.new-c {
+    float:right;
+    color:#00FFFF;
 }

@@ -1,9 +1,9 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    <h2>Новая категория</h2>
-    <form method="POST">
-        {{ form.as_p}}
-        <button type="submit" class="save btn btn-default">Save</button>
-    </form>
+<h2>Новая категория</h2>
+<form method="POST">{% csrf_token %}
+    {{ form.as_p}}
+    <button type="submit" class="save btn btn-default">Save</button>
+</form>
 {% endblock %}
