@@ -1,15 +1,26 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<h2><a href="{% url 'category_new' %}" class="new-c">Add Category</a></h2>
+<a href="{% url 'category_new' %}" class="new-c">Add Category</a><br>
+<a href="{% url 'tag_new' %}" class="new-t">Add Tag</a>
+
+<form method="POST" class="filter">{% csrf_token %}
+    {{ form1.as_p}}
+    <button type="submit" class="save btn btn-default">Apply filters</button>
+    <button type="button" class="save btn btn-default"><a href="{% url 'post_list' %}">Don't apply filters</a></button>
+</form>
 {% for post in posts %}
-    <article class="post">
-        <time class="date">
-            {{ post.published_date }}
-        </time>
-        <h3>Category: {{ post.category }}</h3>
-        <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
-        <p>{{ post.text|linebreaksbr }}</p>
-    </article>
+<article class="post">
+    <time class="date">
+        {{ post.published_date }}
+    </time>
+    <h3 class="category">Category: {{ post.category }}</h3>
+    <strong>Tag: </strong>
+    {% for t in post.tag.all %}
+    <button type="button" class="btn btn-outline-dark">{{ t.tag_title }}</button>
+    {% endfor %}
+    <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
+    <p>{{ post.text|linebreaksbr }}</p>
+</article>
 {% endfor %}
 {% endblock %}

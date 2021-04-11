@@ -1,7 +1,7 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<h2>Creating a new category</h2>
+<h2>Creating a new tag</h2>
     <form method="POST">{% csrf_token %}
         {{ form.as_p}}
         <button type="submit" class="save btn btn-default">Save</button>
