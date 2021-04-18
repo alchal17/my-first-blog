@@ -3,6 +3,13 @@ from django.db import models
 from django.utils import timezone
 
 
+class Comment(models.Model):
+    comment_text = models.TextField()
+
+    def __str__(self):
+        return self.comment_text
+
+
 class Category(models.Model):
     category_title = models.CharField(max_length=100)
 
@@ -24,6 +31,7 @@ class Post(models.Model):
     published_date = models.DateTimeField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     tag = models.ManyToManyField(Tag)
+    comment = models.ManyToManyField(Comment)
 
     def __str__(self):
         return self.title

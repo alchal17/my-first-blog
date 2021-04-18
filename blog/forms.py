@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Category, Tag
+from .models import Post, Category, Tag, Comment
 from django.utils import timezone
 
 
@@ -32,3 +32,9 @@ class FilterForm(forms.Form):
     category = forms.ModelChoiceField(queryset=Category.objects.all(), label="Category filter", required=False)
     tag = forms.ModelMultipleChoiceField(queryset=Tag.objects.all(), widget=forms.CheckboxSelectMultiple,
                                          label="Tag filter", required=False)
+
+
+class CommentForm(forms.Form):
+
+    # comment = forms.CharField(widget=forms.Textarea, label=False)
+     comment = forms.CharField(widget=forms.TextInput(attrs={'size': '100', 'placeholder': ' Write your comment here'}), label=False)

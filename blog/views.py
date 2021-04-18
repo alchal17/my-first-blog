@@ -1,22 +1,22 @@
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.utils import timezone
-from .models import Post, Category, Tag
+from .models import Post, Category, Tag, Comment
 from django.shortcuts import render, get_object_or_404
-from .forms import PostForm, CategoryForm, TagForm, FilterForm
+from .forms import PostForm, CategoryForm, TagForm, FilterForm, CommentForm
 
 
 def post_list(request):
-    form1 = FilterForm(request.POST)
-    if request.method == "POST" and form1.is_valid():
+    form = FilterForm(request.POST)
+    if request.method == "POST" and form.is_valid():
         filtered_category_posts = Post.objects.all()
-        if form1.cleaned_data.get("category"):
-            filtered_category_posts = filtered_category_posts.filter(category=form1.cleaned_data.get("category"))
-        if form1.cleaned_data.get("tag"):
-            filtered_category_posts = filtered_category_posts.filter(tag__in=form1.cleaned_data.get("tag"))
+        if form.cleaned_data.get("category"):
+            filtered_category_posts = filtered_category_posts.filter(category=form.cleaned_data.get("category")).order_by('published_date')
+        if form.cleaned_data.get("tag"):
+            filtered_category_posts = filtered_category_posts.filter(tag__in=form.cleaned_data.get("tag")).order_by('published_date')
     else:
         filtered_category_posts = Post.objects.all().order_by('published_date')
-    return render(request, 'blog/post_list.html', {'form1': form1, 'posts': filtered_category_posts})
+    return render(request, 'blog/post_list.html', {'form': form, 'posts': filtered_category_posts})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -39,17 +39,17 @@ def post_new(request):
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
-        form1 = PostForm(request.POST, instance=post)
-        if form1.is_valid():
-            post1 = form1.save(commit=False)
-            post1.author = request.user
-            post1.published_date = timezone.now()
-            post1.save()
-            form1.save_m2m()
-            return redirect('post_list')
+        form = PostForm(request.POST, instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.published_date = timezone.now()
+            post.save()
+            form.save_m2m()
+            return redirect('post_detail')
     else:
-        form1 = PostForm(instance=post)
-    return render(request, 'blog/post_edit.html', {'form': form1})
+        form = PostForm(instance=post)
+    return render(request, 'blog/post_edit.html', {'form': form})
 
 def category_new(request):
     if request.method == "POST":
@@ -66,12 +66,22 @@ def tag_new(request):
     if request.method == "POST":
         form = TagForm(request.POST)
         if form.is_valid():
-            tag = form.save(commit=False)
-            tag.save()
+            form.save()
             return redirect('post_list')
     else:
         form = TagForm()
     return render(request, 'blog/tag_new.html', {'form': form})
 
-def sa1(request):
-    return render(request, 'blog/search.html', {})
+def comment_post(request, pk):
+    post = Post.objects.get(pk=pk)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            new_comment = Comment.objects.create(comment_text=form.cleaned_data.get('comment'))
+            new_comment.save()
+            post.comment.add(new_comment)
+            post.save()
+            return redirect('post_list')
+    else:
+        form = CommentForm()
+    return render(request, 'blog/comment_post.html', {'form': form})

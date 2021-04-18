@@ -1,10 +1,9 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    <h2>Edit post</h2>
-    <form method="POST">{% csrf_token %}
+    <h2>Comment your post</h2>
+    <form method="POST" class="post-form">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default">Save</button>
     </form>
-    <h2><a href="{% url 'category_new'%}" class="new-c2">Add Category</a></h2>
 {% endblock %}

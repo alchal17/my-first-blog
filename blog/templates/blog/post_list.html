@@ -1,11 +1,11 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<a href="{% url 'category_new' %}" class="new-c">Add Category</a><br>
-<a href="{% url 'tag_new' %}" class="new-t">Add Tag</a>
+<button type="button" class="btn btn-secondary"><a href="{% url 'category_new' %}" class="new-c">Add Category</a></button>
+<button type="button" class="btn btn-secondary"><a href="{% url 'tag_new' %}" class="new-t">Add Tag</a></button>
 
-<form method="POST" class="filter">{% csrf_token %}
-    {{ form1.as_p}}
+<form method="POST" class="filter" style="list-style-type: none;">{% csrf_token %}
+    {{ form.as_p}}
     <button type="submit" class="save btn btn-default">Apply filters</button>
     <button type="button" class="save btn btn-default"><a href="{% url 'post_list' %}">Don't apply filters</a></button>
 </form>
@@ -21,6 +21,7 @@
     {% endfor %}
     <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
     <p>{{ post.text|linebreaksbr }}</p>
+
 </article>
 {% endfor %}
 {% endblock %}
