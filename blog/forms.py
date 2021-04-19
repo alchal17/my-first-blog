@@ -15,12 +15,18 @@ class PostForm(forms.ModelForm):
 
 class CategoryForm(forms.ModelForm):
 
+    category_title = forms.CharField(label=False, widget=forms.TextInput(
+        attrs={'size': '50', 'placeholder': 'Create your category here'}))
+
     class Meta:
         model = Category
         fields = ('category_title',)
 
 
 class TagForm(forms.ModelForm):
+
+    tag_title = forms.CharField(label=False, widget=forms.TextInput(
+        attrs={'size': '50', 'placeholder': 'Create your tag here'}))
 
     class Meta:
         model = Tag
