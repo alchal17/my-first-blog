@@ -7,7 +7,7 @@
 <form method="POST" class="filter" style="list-style-type: none;">{% csrf_token %}
     {{ form.as_p}}
     <button type="submit" class="save btn btn-default">Apply filters</button>
-    <button type="button" class="save btn btn-default"><a href="{% url 'post_list' %}">Don't apply filters</a></button>
+    <button type="button" class="save btn btn-default"><a href="{% url 'post_list' %}">Clear filters</a></button>
 </form>
 {% for post in posts %}
 <article class="post">

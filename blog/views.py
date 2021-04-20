@@ -20,7 +20,17 @@ def post_list(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, 'blog/post_detail.html', {'post': post})
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            new_comment = Comment.objects.create(comment_text=form.cleaned_data.get('comment'))
+            new_comment.save()
+            post.comment.add(new_comment)
+            post.save()
+            return redirect('post_detail', pk=pk)
+    else:
+        form = CommentForm()
+    return render(request, 'blog/post_detail.html', {'post': post, 'form': form})
 
 def post_new(request):
     if request.method == "POST":
@@ -55,8 +65,7 @@ def category_new(request):
     if request.method == "POST":
         form = CategoryForm(request.POST)
         if form.is_valid():
-            category = form.save(commit=False)
-            category.save()
+            form.save()
             return redirect('post_list')
     else:
         form = CategoryForm()
@@ -72,16 +81,4 @@ def tag_new(request):
         form = TagForm()
     return render(request, 'blog/tag_new.html', {'form': form})
 
-def comment_post(request, pk):
-    post = Post.objects.get(pk=pk)
-    if request.method == "POST":
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            new_comment = Comment.objects.create(comment_text=form.cleaned_data.get('comment'))
-            new_comment.save()
-            post.comment.add(new_comment)
-            post.save()
-            return redirect('post_list')
-    else:
-        form = CommentForm()
-    return render(request, 'blog/comment_post.html', {'form': form})
+
