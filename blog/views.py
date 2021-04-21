@@ -11,9 +11,9 @@ def post_list(request):
     if request.method == "POST" and form.is_valid():
         filtered_category_posts = Post.objects.all()
         if form.cleaned_data.get("category"):
-            filtered_category_posts = filtered_category_posts.filter(category=form.cleaned_data.get("category")).order_by('published_date')
+            filtered_category_posts = filtered_category_posts.filter(category=form.cleaned_data.get("category")).order_by('published_date').distinct()
         if form.cleaned_data.get("tag"):
-            filtered_category_posts = filtered_category_posts.filter(tag__in=form.cleaned_data.get("tag")).order_by('published_date')
+            filtered_category_posts = filtered_category_posts.filter(tag__in=form.cleaned_data.get("tag")).order_by('published_date').distinct()
     else:
         filtered_category_posts = Post.objects.all().order_by('published_date')
     return render(request, 'blog/post_list.html', {'form': form, 'posts': filtered_category_posts})
