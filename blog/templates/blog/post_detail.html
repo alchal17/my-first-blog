@@ -6,9 +6,6 @@
         <h1>Category: {{ post.category }}</h1>
         <h2>Title: {{ post.title }}</h2>
         <p>Text: {{ post.text|linebreaksbr }}</p>
-        {% for c in post.comment.all %}
-        <h5>{{ c.comment_text }}</h5>
-        {% endfor %}
         <form method="POST">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default">Add comment</button>
@@ -20,5 +17,8 @@
                 </a>
                 {% endif %}
         </aside>
+        {% for c in post.comment.all %}
+        <h5>{{ c.comment_text }}</h5>
+        {% endfor %}
     </article>
 {% endblock %}
