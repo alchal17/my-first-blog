@@ -56,7 +56,7 @@ def post_edit(request, pk):
             post.published_date = timezone.now()
             post.save()
             form.save_m2m()
-            return redirect('post_detail')
+            return redirect('post_list')
     else:
         form = PostForm(instance=post)
     return render(request, 'blog/post_edit.html', {'form': form})
