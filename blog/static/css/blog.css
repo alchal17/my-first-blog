@@ -5,6 +5,7 @@
 .new-c,
 .new-t{
     font-size: 24pt;
+    margin-bottom: 100pt;
 }
 
 a {
@@ -18,10 +19,11 @@ h2 a{
 
 .top-menu{
     float: right;
+    margin-top: -40pt
 }
 
 .post{
-    margin-bottom: 40px;
+    margin-top: 40px;
 }
 
 .category{
@@ -37,4 +39,27 @@ ul{
     color: #C25100;
     background: none;
     border-color: #C25100;
+}
+
+.base-header{
+    font-size: 40pt;
+}
+
+.save{
+    float: right;
+}
+
+.comment{
+    margin-top: 40px;
+}
+
+}
+
+.edit-button,
+.comment-save-button{
+    color: #C25100;
+    background: none;
+    border-color: #C25100;
+    float: right;
+    margin-top: -40px;
 }

@@ -1,24 +1,35 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+    <head>
+        <title>detail of post</title>
+    </head>
     <article class="post">
-
-        <h1>Category: {{ post.category }}</h1>
+        <header>
+            <h1>Category: {{ post.category }}</h1>
+        </header>
         <h2>Title: {{ post.title }}</h2>
-        <p>Text: {{ post.text|linebreaksbr }}</p>
+        <article>Text: {{ post.text|linebreaksbr }}</article>
+        {% if user.is_authenticated %}
         <form method="POST">{% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="save btn btn-default">Add comment</button>
+        <button type="submit" class="comment-button">Add comment</button>
         </form>
-        <aside class="actions">
-                {% if user.is_authenticated %}
-                <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}">
-                    {% include './icons/pencil-fill.svg' %}
-                </a>
-                {% endif %}
+        {% endif %}
+        <aside>
+            {% if user.is_authenticated %}
+            <a class="edit-button" href="{% url 'post_edit' pk=post.pk %}">
+                {% include './icons/pencil-fill.svg' %}
+            </a>
+            {% endif %}
         </aside>
         {% for c in post.comment.all %}
-        <h5>{{ c.comment_text }}</h5>
+        <div class="comment">
+<!--            <aside><h5>{{ c.comment_text }}</h5></aside>-->
+            <aside><h4>{{ c.author }}</h4></aside>
+            <aside><h5>{{ c.comment_text }}</h5></aside>
+            <footer>{{ c.published_date }}</footer>
+        </div>
         {% endfor %}
-    </article>
+        </article>
 {% endblock %}

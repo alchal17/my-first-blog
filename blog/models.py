@@ -5,6 +5,8 @@ from django.utils import timezone
 
 class Comment(models.Model):
     comment_text = models.TextField()
+    published_date = models.DateTimeField(blank=True, null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, verbose_name='author')
 
     def __str__(self):
         return self.comment_text

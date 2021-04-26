@@ -4,11 +4,20 @@
 <button type="button" class="btn btn-secondary"><a href="{% url 'category_new' %}" class="new-c">Add Category</a></button>
 <button type="button" class="btn btn-secondary"><a href="{% url 'tag_new' %}" class="new-t">Add Tag</a></button>
 
+    <div class="container">
+        {% if user.is_authenticated %}
+        <a href="{% url 'post_new' %}" class="top-menu">
+            {% include './icons/file-earmark-plus.svg' %}
+        </a>
+        {% endif %}
+    </div>
+
 <form method="POST" class="filter" style="list-style-type: none;">{% csrf_token %}
     {{ form.as_p}}
     <button type="submit" class="save btn btn-default">Apply filters</button>
     <button type="button" class="save btn btn-default"><a href="{% url 'post_list' %}">Clear filters</a></button>
 </form>
+
 {% for post in posts %}
 <article class="post">
     <time class="date">
@@ -21,7 +30,7 @@
     {% endfor %}
     <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
     <p>{{ post.text|linebreaksbr }}</p>
-
 </article>
 {% endfor %}
+ppp
 {% endblock %}

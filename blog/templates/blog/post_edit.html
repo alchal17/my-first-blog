@@ -2,9 +2,11 @@
 
 {% block content %}
     <h2>Edit post</h2>
+    <body>
     <form method="POST">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="save btn btn-default">Save</button>
     </form>
-    <h2><a href="{% url 'category_new'%}" class="new-c2">Add Category</a></h2>
+        <h2><a href="{% url 'category_new'%}" class="new-c2">Add Category</a></h2>
+    </body>
 {% endblock %}

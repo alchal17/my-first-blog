@@ -23,7 +23,8 @@ def post_detail(request, pk):
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
-            new_comment = Comment.objects.create(comment_text=form.cleaned_data.get('comment'))
+            new_comment = Comment.objects.create(comment_text=form.cleaned_data.get('comment'), author=request.user,
+                                                 published_date=timezone.now())
             new_comment.save()
             post.comment.add(new_comment)
             post.save()
