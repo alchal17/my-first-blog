@@ -50,16 +50,25 @@ ul{
 }
 
 .comment{
-    margin-top: 40px;
+    margin-top: 45px;
 }
 
 }
 
-.edit-button,
-.comment-save-button{
+.comment-button{
     color: #C25100;
     background: none;
     border-color: #C25100;
     float: right;
     margin-top: -40px;
+}
+
+.author-name{
+    font-family: 'Lobster';
+    margin-bottom: 20px;
+}
+
+.edit-button{
+    float: right;
+    margin-top: -50pt
 }

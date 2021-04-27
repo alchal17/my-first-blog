@@ -5,6 +5,11 @@ from django.utils import timezone
 
 class PostForm(forms.ModelForm):
 
+    title = forms.CharField(max_length=200, widget=forms.TextInput(
+        attrs={'size': '35', 'placeholder': 'Write your title here'}), label=False)
+    # text = forms.CharField(widget=forms.Textarea(attrs={'size': '230', 'placeholder': 'Write your post here'}), label=False)
+    text = forms.CharField(label=False)
+    text.widget = forms.Textarea(attrs={'size': '120', 'placeholder': 'Write your post here'})
     category = forms.ModelChoiceField(queryset=Category.objects.all())
     tag = forms.ModelMultipleChoiceField(queryset=Tag.objects.all())
 

@@ -25,7 +25,7 @@
         </aside>
         {% for c in post.comment.all %}
         <div class="comment">
-            <aside><h4>{{ c.author }}</h4></aside>
+            <aside><h4 class="author-name">{{ c.author }}</h4></aside>
             <aside><h5>{{ c.comment_text }}</h5></aside>
             <footer>{{ c.published_date }}</footer>
         </div>
