@@ -9,7 +9,7 @@
             <h1>Category: {{ post.category }}</h1>
         </header>
         <h2>Title: {{ post.title }}</h2>
-        <article>Text: {{ post.text|linebreaksbr }}</article>
+        <article class="post-text">Text: {{ post.text|linebreaksbr }}</article>
         {% if user.is_authenticated %}
         <form method="POST">{% csrf_token %}
         {{ form.as_p }}
@@ -25,9 +25,8 @@
         </aside>
         {% for c in post.comment.all %}
         <div class="comment">
-            <aside><h4 class="author-name">{{ c.author }}</h4></aside>
+            <aside><h4 class="author-name">{{ c.author }} {{ c.published_date }}</h4></aside>
             <aside><h5>{{ c.comment_text }}</h5></aside>
-            <footer>{{ c.published_date }}</footer>
         </div>
         {% endfor %}
         </article>

@@ -64,11 +64,16 @@ ul{
 }
 
 .author-name{
+    color: #A9A9A9;
     font-family: 'Lobster';
     margin-bottom: 20px;
 }
 
 .edit-button{
     float: right;
-    margin-top: -50pt
+    margin-top: -450pt;
+}
+
+.post-text{
+    margin-top: 300pt;
 }
