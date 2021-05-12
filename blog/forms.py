@@ -21,7 +21,7 @@ class PostForm(forms.ModelForm):
 class CategoryForm(forms.ModelForm):
 
     category_title = forms.CharField(label=False, widget=forms.TextInput(
-        attrs={'size': '50', 'placeholder': 'Create your category here'}))
+        attrs={'size': '50', 'placeholder': 'Create your category here', 'class': 'white-text'}))
 
     class Meta:
         model = Category
@@ -40,12 +40,13 @@ class TagForm(forms.ModelForm):
 
 class FilterForm(forms.Form):
 
-    category = forms.ModelChoiceField(queryset=Category.objects.all(), label="Category filter", required=False)
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), label=False, required=False, widget=forms.Select(
+        attrs={'placeholder': 'category filter'}))
     tag = forms.ModelMultipleChoiceField(queryset=Tag.objects.all(), widget=forms.CheckboxSelectMultiple,
                                          label="Tag filter", required=False)
 
 
 class CommentForm(forms.Form):
 
-    # comment = forms.CharField(widget=forms.Textarea, label=False)
-     comment = forms.CharField(widget=forms.TextInput(attrs={'size': '100', 'placeholder': ' Write your comment here'}), label=False)
+     comment = forms.CharField(widget=forms.TextInput(attrs={'size': '100', 'placeholder': ' Write your comment here'}),
+                               label=False)

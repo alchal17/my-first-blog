@@ -11,15 +11,22 @@ def post_list(request):
     if request.method == "POST" and form.is_valid():
         filtered_category_posts = Post.objects.all()
         if form.cleaned_data.get("category"):
-            filtered_category_posts = filtered_category_posts.filter(category=form.cleaned_data.get("category")).order_by('published_date').distinct()
+            filtered_category_posts = filtered_category_posts.filter(
+                category=form.cleaned_data.get("category")).order_by('published_date').distinct()
         if form.cleaned_data.get("tag"):
-            filtered_category_posts = filtered_category_posts.filter(tag__in=form.cleaned_data.get("tag")).order_by('published_date').distinct()
+            filtered_category_posts = filtered_category_posts.filter(tag__in=form.cleaned_data.get("tag")).order_by(
+                'published_date').distinct()
+    if request.GET.get("t") and request.method == "POST" and not form.is_valid():
+        filtered_category_posts = Post.objects.all().filter(tag=request.GET.get("t"))
     else:
         filtered_category_posts = Post.objects.all().order_by('published_date')
-    return render(request, 'blog/post_list.html', {'form': form, 'posts': filtered_category_posts})
+    return render(request, 'blog/post_list.html',
+                  {'form': form, 'posts': filtered_category_posts, 'title': 'Main page'})
+
 
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
+    title = f'Detail of {post.title} post'
     if request.method == "POST":
         form = CommentForm(request.POST)
         if form.is_valid():
@@ -31,7 +38,8 @@ def post_detail(request, pk):
             return redirect('post_detail', pk=pk)
     else:
         form = CommentForm()
-    return render(request, 'blog/post_detail.html', {'post': post, 'form': form})
+    return render(request, 'blog/post_detail.html', {'post': post, 'form': form, 'title': title})
+
 
 def post_new(request):
     if request.method == "POST":
@@ -45,10 +53,12 @@ def post_new(request):
             return redirect('post_list')
     else:
         form = PostForm()
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, 'blog/post_edit.html', {'form': form, 'title': 'Creating a new post'})
+
 
 def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
+    title = f'Edit post "{post.title}"'
     if request.method == "POST":
         form = PostForm(request.POST, instance=post)
         if form.is_valid():
@@ -60,7 +70,8 @@ def post_edit(request, pk):
             return redirect('post_list')
     else:
         form = PostForm(instance=post)
-    return render(request, 'blog/post_edit.html', {'form': form})
+    return render(request, 'blog/post_edit.html', {'form': form, 'title': title})
+
 
 def category_new(request):
     if request.method == "POST":
@@ -70,7 +81,8 @@ def category_new(request):
             return redirect('post_list')
     else:
         form = CategoryForm()
-    return render(request, 'blog/category_new.html', {'form': form})
+    return render(request, 'blog/category_new.html', {'form': form, 'title': 'Create a new category'})
+
 
 def tag_new(request):
     if request.method == "POST":
@@ -80,6 +92,4 @@ def tag_new(request):
             return redirect('post_list')
     else:
         form = TagForm()
-    return render(request, 'blog/tag_new.html', {'form': form})
-
-
+    return render(request, 'blog/tag_new.html', {'form': form, 'title': 'Create new tag'})

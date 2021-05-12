@@ -1,35 +1,44 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-<button type="button" class="btn btn-secondary"><a href="{% url 'category_new' %}" class="new-c">Add Category</a></button>
-<button type="button" class="btn btn-secondary"><a href="{% url 'tag_new' %}" class="new-t">Add Tag</a></button>
-
-    <div class="container">
-        {% if user.is_authenticated %}
-        <a href="{% url 'post_new' %}" class="top-menu">
-            {% include './icons/file-earmark-plus.svg' %}
-        </a>
-        {% endif %}
-    </div>
+{% if user.is_authenticated %}
+<button type="button" class="new-button">
+    <a href="{% url 'category_new' %}" class="new-c">
+        <p class="white-text">New Category</p>
+    </a>
+</button>
+<button type="button" class="new-button">
+    <a href="{% url 'tag_new' %}" class="new-c">
+        <p class="white-text">New Tag</p>
+    </a>
+</button>
+<button type="button" class="new-button">
+    <a href="{% url 'post_new' %}" class="new-c">
+        <p class="white-text">New post</p>
+    </a>
+</button>
+{% endif %}
 
 <form method="POST" class="filter" style="list-style-type: none;">{% csrf_token %}
     {{ form.as_p}}
-    <button type="submit" class="save btn btn-default">Apply filters</button>
-    <button type="button" class="save btn btn-default"><a href="{% url 'post_list' %}">Clear filters</a></button>
+    <button type="submit" class="new-button">Apply filters</button>
+    <a class="new-button" href="{% url 'post_list' %}">Clear filters</a>
 </form>
 
 {% for post in posts %}
 <article class="post">
-    <time class="date">
-        {{ post.published_date }}
-    </time>
-    <h3 class="category">Category: {{ post.category }}</h3>
-    <strong>Tag: </strong>
+    <h3 class="category-tag">Category: {{ post.category }}</h3>
+    <strong class="category-tag">Tag: </strong>
     {% for t in post.tag.all %}
-    <button type="button" class="btn btn-outline-dark">{{ t.tag_title }}</button>
+    <button type="button" class="tag-button">
+        <a href="{% url 'post_list' %}?t={{t.pk}}" class="blue-text">{{ t.tag_title }}</a>
+    </button>
     {% endfor %}
-    <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
+    <h2>
+        <a href="{% url 'post_detail' pk=post.pk %}" class="post-title">{{ post.title }}</a>
+    </h2>
     <p>{{ post.text|linebreaksbr }}</p>
+    <footer>{{ post.published_date }}</footer>
 </article>
 {% endfor %}
 {% endblock %}

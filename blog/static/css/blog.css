@@ -2,19 +2,9 @@
     float: right;
 }
 
-.new-c,
-.new-t{
+.new-c{
     font-size: 24pt;
     margin-bottom: 100pt;
-}
-
-a {
-    color: #00008B;
-}
-
-h2 a{
-    color: #000000;
-    font-family: 'Lobster';
 }
 
 .top-menu{
@@ -24,10 +14,11 @@ h2 a{
 
 .post{
     margin-top: 40px;
+    color: #FFFFFF;
 }
 
-.category{
-    color: #7FFFD4;
+.category-tag{
+    color: #05386B;
 }
 
 ul{
@@ -43,28 +34,41 @@ ul{
 
 .base-header{
     font-size: 40pt;
+    color: #05386B;
 }
 
-.save{
+.save-button{
     float: right;
+    background-color: #EDF5E1;
+    border: none;
+    color: black;
+    padding: 4px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
 }
 
 .comment{
     margin-top: 45px;
 }
 
-}
-
 .comment-button{
-    color: #C25100;
-    background: none;
-    border-color: #C25100;
     float: right;
-    margin-top: -40px;
+    background-color: #EDF5E1;
+    border: none;
+    color: black;
+    padding: 4px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: -44px;
+
 }
 
 .author-name{
-    color: #A9A9A9;
+    color: #05386B;
     font-family: 'Lobster';
     margin-bottom: 20px;
 }
@@ -74,6 +78,65 @@ ul{
     margin-top: -450pt;
 }
 
-.post-text{
+.comment-form{
     margin-top: 300pt;
 }
+
+body{
+    background-color: #5CDB95;
+}
+
+.page-header{
+    font-size: 40pt;
+}
+
+.post-title{
+    color:#FFFFFF;
+    font-size: 20pt;
+}
+
+.new-button {
+  background-color: #05386B;
+  border: none;
+  color: white;
+  padding: 4px 22px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.new-button a:active{
+    color: red;
+}
+
+.new-button:hover {
+  text-decoration: none;
+  text-justify: none;
+  color: white;
+}
+
+.white-text{
+    color: #FFFFFF;
+}
+
+.tag-button{
+  background-color: #EDF5E1;
+  border: none;
+  color: white;
+  padding: 3px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  height: 30px;
+}
+
+.blue-text{
+    color: #05386B;
+    font-size: 14px;
+}
+
+.new-button .new-c{
+    text-decoration: none;
+}
+

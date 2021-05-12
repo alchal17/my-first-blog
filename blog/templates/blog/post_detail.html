@@ -1,33 +1,36 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    <head>
-        <title>detail of post</title>
-    </head>
-    <article class="post">
-        <header>
-            <h1>Category: {{ post.category }}</h1>
-        </header>
-        <h2>Title: {{ post.title }}</h2>
-        <article class="post-text">Text: {{ post.text|linebreaksbr }}</article>
-        {% if user.is_authenticated %}
-        <form method="POST">{% csrf_token %}
+<article class="post">
+    <header>
+        <h1>Category: {{ post.category }}</h1>
+    </header>
+    <h2>Title: {{ post.title }}</h2>
+    <article>Text: {{ post.text|linebreaksbr }}</article>
+    {% if user.is_authenticated %}
+    <form class="comment-form" method="POST">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="comment-button">Add comment</button>
-        </form>
-        {% endif %}
-        <aside>
-            {% if user.is_authenticated %}
-            <a class="edit-button" href="{% url 'post_edit' pk=post.pk %}">
-                {% include './icons/pencil-fill.svg' %}
+    </form>
+    {% endif %}
+    <aside>
+        {% if user.is_authenticated %}
+        <button type="button" style="float:right; margin-top: -550px" class="new-button">
+            <a href="{% url 'post_edit' pk=post.pk %}" class="new-c">
+                <div class="white-text">Edit {{ post.title }}</div>
             </a>
-            {% endif %}
+        </button>
+        {% endif %}
+    </aside>
+    {% for c in post.comment.all %}
+    <div class="comment">
+        <aside>
+            <h4 class="author-name">{{ c.author }} {{ c.published_date }}</h4>
         </aside>
-        {% for c in post.comment.all %}
-        <div class="comment">
-            <aside><h4 class="author-name">{{ c.author }} {{ c.published_date }}</h4></aside>
-            <aside><h5>{{ c.comment_text }}</h5></aside>
-        </div>
-        {% endfor %}
-        </article>
+        <aside>
+            <h5>{{ c.comment_text }}</h5>
+        </aside>
+    </div>
+    {% endfor %}
+</article>
 {% endblock %}
