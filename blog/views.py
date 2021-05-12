@@ -16,7 +16,9 @@ def post_list(request):
         if form.cleaned_data.get("tag"):
             filtered_category_posts = filtered_category_posts.filter(tag__in=form.cleaned_data.get("tag")).order_by(
                 'published_date').distinct()
-    if request.GET.get("t") and request.method == "POST" and not form.is_valid():
+        return render(request, 'blog/post_list.html',
+                      {'form': form, 'posts': filtered_category_posts, 'title': 'Main page'})
+    if request.GET.get("t"):
         filtered_category_posts = Post.objects.all().filter(tag=request.GET.get("t"))
     else:
         filtered_category_posts = Post.objects.all().order_by('published_date')
