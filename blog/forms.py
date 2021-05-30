@@ -4,7 +4,6 @@ from django.utils import timezone
 
 
 class PostForm(forms.ModelForm):
-
     title = forms.CharField(max_length=200, widget=forms.TextInput(
         attrs={'size': '35', 'placeholder': 'Write your title here'}), label=False)
     # text = forms.CharField(widget=forms.Textarea(attrs={'size': '230', 'placeholder': 'Write your post here'}), label=False)
@@ -19,9 +18,8 @@ class PostForm(forms.ModelForm):
 
 
 class CategoryForm(forms.ModelForm):
-
     category_title = forms.CharField(label=False, widget=forms.TextInput(
-        attrs={'size': '50', 'placeholder': 'Create your category here', 'class': 'white-text'}))
+        attrs={'size': '50', 'placeholder': 'Create your category here'}))
 
     class Meta:
         model = Category
@@ -29,7 +27,6 @@ class CategoryForm(forms.ModelForm):
 
 
 class TagForm(forms.ModelForm):
-
     tag_title = forms.CharField(label=False, widget=forms.TextInput(
         attrs={'size': '50', 'placeholder': 'Create your tag here'}))
 
@@ -39,7 +36,6 @@ class TagForm(forms.ModelForm):
 
 
 class FilterForm(forms.Form):
-
     category = forms.ModelChoiceField(queryset=Category.objects.all(), label=False, required=False, widget=forms.Select(
         attrs={'placeholder': 'category filter'}))
     tag = forms.ModelMultipleChoiceField(queryset=Tag.objects.all(), widget=forms.CheckboxSelectMultiple,
@@ -47,6 +43,5 @@ class FilterForm(forms.Form):
 
 
 class CommentForm(forms.Form):
-
-     comment = forms.CharField(widget=forms.TextInput(attrs={'size': '100', 'placeholder': ' Write your comment here'}),
-                               label=False)
+    comment = forms.CharField(widget=forms.TextInput(attrs={'size': '100', 'placeholder': ' Write your comment here'}),
+                              label=False)

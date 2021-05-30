@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.shortcuts import reverse
 
 
 class Comment(models.Model):
@@ -24,6 +25,7 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.tag_title
+
 
 class Post(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name='Автор')

@@ -94,4 +94,4 @@ def tag_new(request):
             return redirect('post_list')
     else:
         form = TagForm()
-    return render(request, 'blog/tag_new.html', {'form': form, 'title': 'Create new tag'})
+    return render(request, 'blog/tag_new.html', {'form': form, 'title': 'Create a new tag'})
