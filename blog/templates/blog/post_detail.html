@@ -22,7 +22,7 @@
         </button>
         {% endif %}
     </aside>
-    {% for c in post.comment.all %}
+    {% for c in comments%}
     <div class="comment">
         <aside>
             <h4 class="author-name">{{ c.author }} {{ c.published_date }}</h4>

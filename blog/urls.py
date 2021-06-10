@@ -3,8 +3,8 @@ from . import views
 from . import class_based_views
 
 urlpatterns = [
-    path('', views.post_list, name='post_list'),
-    # path('', class_based_views.PostListView.as_view(), name='post_list'),
+    # path('', views.post_list, name='post_list'),
+    path('', class_based_views.PostFormView.as_view(), name='post_list'),
     path('post/<int:pk>/', class_based_views.PostDetailFormView.as_view(), name='post_detail'),
     # path('post/<int:pk>/', views.post_detail, name='post_detail'),
     # path('post/new/', views.post_new, name='post_new'),

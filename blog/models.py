@@ -4,15 +4,6 @@ from django.utils import timezone
 from django.shortcuts import reverse
 
 
-class Comment(models.Model):
-    comment_text = models.TextField()
-    published_date = models.DateTimeField(blank=True, null=True)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, verbose_name='author')
-
-    def __str__(self):
-        return self.comment_text
-
-
 class Category(models.Model):
     category_title = models.CharField(max_length=100)
 
@@ -35,7 +26,16 @@ class Post(models.Model):
     published_date = models.DateTimeField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     tag = models.ManyToManyField(Tag)
-    comment = models.ManyToManyField(Comment)
 
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+    comment_text = models.TextField()
+    published_date = models.DateTimeField(blank=True, null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, verbose_name='author')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.comment_text

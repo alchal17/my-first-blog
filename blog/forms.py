@@ -42,6 +42,11 @@ class FilterForm(forms.Form):
                                          label="Tag filter", required=False)
 
 
-class CommentForm(forms.Form):
-    comment = forms.CharField(widget=forms.TextInput(attrs={'size': '100', 'placeholder': ' Write your comment here'}),
-                              label=False)
+class CommentForm(forms.ModelForm):
+    comment_text = forms.CharField(
+        widget=forms.TextInput(attrs={'size': '100', 'placeholder': ' Write your comment here'}),
+        label=False)
+
+    class Meta:
+        model = Comment
+        fields = ('comment_text',)

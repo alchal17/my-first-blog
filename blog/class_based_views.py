@@ -9,36 +9,53 @@ from django.views import View
 from django.urls import reverse_lazy, reverse
 
 
-class PostListView(ListView):
+class PostFormView(FormView):
     model = Post
-    template_name = 'blog/post_list'
+    template_name = 'blog/post_list.html'
+    form_class = FilterForm
+    success_url = reverse_lazy('post_list')
 
-    def get_request(self, request, *args, **kwargs):
-        self.request = request
-        return super(PostListView, self).get(request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        context['form'] = form
+        context['posts'] = Post.objects.all()
+        if request.GET.get("t"):
+            context['posts'] = Post.objects.all().filter(tag=request.GET.get("t"))
+        return self.render_to_response(context)
 
-    def get_context_data(self, object_list=None, **kwargs):
-        context = super(PostListView, self).get_context_data(**kwargs)
-        form = FilterForm(self.request.POST)
-        if self.request.method == "GET" and form.is_valid():
-            filtered_category_posts = Post.objects.all()
-            if form.cleaned_data.get("category"):
-                filtered_category_posts = filtered_category_posts.filter(
-                    category=form.cleaned_data.get("category")).order_by("published_date").distinct()
-            if form.cleaned_data.get("tag"):
-                filtered_category_posts = filtered_category_posts.filter(tag__in=form.cleaned_data.get("tag")).order_by(
-                    "publisher_date").distinct()
-            context['form'] = form
-            context['posts'] = filtered_category_posts
-            context['title'] = 'Main page'
-            return context
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form, **kwargs)
+
+    def form_valid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        filtered_category_posts = Post.objects.all()
+        if form.cleaned_data.get("category"):
+            filtered_category_posts = filtered_category_posts.filter(
+                category=form.cleaned_data.get("category")).order_by('published_date').distinct()
+        if form.cleaned_data.get("tag"):
+            filtered_category_posts = filtered_category_posts.filter(tag__in=form.cleaned_data.get("tag")).order_by(
+                'published_date').distinct()
+        context['posts'] = filtered_category_posts
+        return self.render_to_response(context)
+
+    def form_invalid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
+        context['form'] = form
+        return self.render_to_response(context)
 
 
 class TagCreateView(CreateView):
     model = Tag
     template_name = 'blog/tag_new.html'
-    fields = ['tag_title']
     success_url = reverse_lazy('post_list')
+    fields = ['tag_title']
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,33 +110,33 @@ class PostUpdateView(UpdateView):
         return context
 
 
-class PostDetailFormView(FormView):
+class PostDetailFormView(CreateView):
     form_class = CommentForm
+    model = Comment
     template_name = 'blog/post_detail.html'
+    pk_url_kwarg = 'pk'
 
     def get(self, request, pk):
         self.post = Post.objects.get(pk=pk)
         self.pk = pk
+        self.request = request
         return super(PostDetailFormView, self).get(request, pk)
 
     def get_success_url(self):
-        if 'pk' in self.kwargs:
-            pk = self.kwargs['pk']
-        else:
-            pk = 'demo'
-        return reverse('post_detail', kwargs={"pk": pk})
+        return reverse('post_detail', kwargs={'pk': self.kwargs['pk']})
 
     def form_valid(self, form, *args, **kwargs):
         post = get_object_or_404(Post, pk=self.kwargs['pk'])
-        new_comment = Comment.objects.create(comment_text=form.cleaned_data.get('comment'), author=self.request.user,
-                                             published_date=timezone.now())
-        new_comment.save()
-        post.comment.add(new_comment)
-        post.save()
+        new_comment = form.save(commit=False)
+        new_comment.post = post
+        new_comment.author = self.request.user
+        new_comment.published_date = timezone.now()
+        form.save()
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(PostDetailFormView, self).get_context_data(**kwargs)
+        context['comments'] = Comment.objects.all().filter(post=self.post)
         context['title'] = f'Detail of {self.post.title} post'
         context['form'] = CommentForm
         context['post'] = self.post
