@@ -1,6 +1,7 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+<p id="test_txt"></p>
 <article class="post">
     <header>
         <h1>Category: {{ post.category }}</h1>
@@ -8,7 +9,7 @@
     <h2>Title: {{ post.title }}</h2>
     <article>Text: {{ post.text|linebreaksbr }}</article>
     {% if user.is_authenticated %}
-    <form class="comment-form" method="POST">{% csrf_token %}
+    <form class="comment-form" method="POST" id="comment-form">{% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="comment-button">Add comment</button>
     </form>
@@ -22,15 +23,51 @@
         </button>
         {% endif %}
     </aside>
+    <div id="all_comments">
     {% for c in comments%}
-    <div class="comment">
-        <aside>
-            <h4 class="author-name">{{ c.author }} {{ c.published_date }}</h4>
-        </aside>
-        <aside>
-            <h5>{{ c.comment_text }}</h5>
-        </aside>
+        <div class="comment">
+            <aside>
+                <h4 class="author-name">{{ c.author }} {{ c.published_date }}</h4>
+            </aside>
+            <aside>
+                <h5 id="comment">{{ c.comment_text }}</h5>
+            </aside>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </article>
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script>
+    $("#comment-form").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'post_detail' pk=post.pk %}",
+            data: serializedData,
+            success: function (response) {
+                $("#test-form").trigger('reset');
+                var new_c = JSON.parse(response["new_c"]);
+                var instance = JSON.parse(response["instance"]);
+                var fields = new_c[0]["fields"];
+                console.log(response["today"])
+                $("#all_comments").prepend(
+                    `
+                    <div class="comment">
+                        <aside>
+                            <h4 class="author-name">${response["user"]} ${response["today"]}</h4>
+                        </aside>
+                        <aside>
+                            <h5 id="comment">${fields["comment_text"]}</h5>
+                        </aside>
+                    </div>
+                    `
+                )
+            },
+            error: function (response) {
+                alert(response["responseJSON"]["error"]);
+            }
+        })
+    })
+</script>
 {% endblock %}

@@ -140,3 +140,14 @@ body{
     text-decoration: none;
 }
 
+.body-light{
+    background-color: #5CDB95;
+}
+
+.body-dark{
+    background-color: #000000;
+}
+
+.orange-text{
+    color: #FF4500;
+}

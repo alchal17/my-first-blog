@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Category, Tag, Comment
+from .models import Post, Category, Tag, Comment, Test_data
 from django.utils import timezone
 
 
@@ -50,3 +50,10 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('comment_text',)
+
+
+class TestForm(forms.ModelForm):
+
+    class Meta:
+        model = Test_data
+        fields = ('data_title',)

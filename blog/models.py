@@ -4,6 +4,13 @@ from django.utils import timezone
 from django.shortcuts import reverse
 
 
+class Test_data(models.Model):
+    data_title = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.data_title
+
+
 class Category(models.Model):
     category_title = models.CharField(max_length=100)
 
@@ -33,7 +40,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     comment_text = models.TextField()
-    published_date = models.DateTimeField(blank=True, null=True)
+    published_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, verbose_name='author')
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 

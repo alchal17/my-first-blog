@@ -5,7 +5,7 @@ from . import class_based_views
 urlpatterns = [
     # path('', views.post_list, name='post_list'),
     path('', class_based_views.PostFormView.as_view(), name='post_list'),
-    path('post/<int:pk>/', class_based_views.PostDetailFormView.as_view(), name='post_detail'),
+    path('post/<int:pk>/', class_based_views.PostDetailCreateView.as_view(), name='post_detail'),
     # path('post/<int:pk>/', views.post_detail, name='post_detail'),
     # path('post/new/', views.post_new, name='post_new'),
     path('post/new/', class_based_views.PostCreateView.as_view(), name='post_new'),
@@ -15,4 +15,7 @@ urlpatterns = [
     path('category/new', class_based_views.CategoryCreateView.as_view(), name='category_new'),
     # path('tag/new/', views.tag_new, name='tag_new'),
     path('tag/new/', class_based_views.TagCreateView.as_view(), name='tag_new'),
+    # path(r'tag/new/$', views.add_ajax, name='tag_new'),
+    path('test', views.test, name='test')
+    # path('test', class_based_views.Test_class.as_view(), name='test')
 ]
