@@ -36,7 +36,6 @@
         {% endfor %}
     </div>
 </article>
-<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 <script>
     $("#comment-form").submit(function (e) {
         e.preventDefault();
@@ -46,16 +45,16 @@
             url: "{% url 'post_detail' pk=post.pk %}",
             data: serializedData,
             success: function (response) {
-                $("#test-form").trigger('reset');
+                $("#comment-form").trigger('reset');
                 var new_c = JSON.parse(response["new_c"]);
                 var instance = JSON.parse(response["instance"]);
                 var fields = new_c[0]["fields"];
-                console.log(response["today"])
+                console.log(fields["user"])
                 $("#all_comments").prepend(
                     `
                     <div class="comment">
                         <aside>
-                            <h4 class="author-name">${response["user"]} ${response["today"]}</h4>
+                            <h4 class="author-name">${fields["user"]} ${fields["published_date"]}</h4>
                         </aside>
                         <aside>
                             <h5 id="comment">${fields["comment_text"]}</h5>

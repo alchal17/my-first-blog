@@ -4,13 +4,6 @@ from django.utils import timezone
 from django.shortcuts import reverse
 
 
-class Test_data(models.Model):
-    data_title = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.data_title
-
-
 class Category(models.Model):
     category_title = models.CharField(max_length=100)
 

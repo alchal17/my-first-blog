@@ -3,9 +3,9 @@ import random
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.utils import timezone
-from .models import Post, Category, Tag, Comment, Test_data
+from .models import Post, Category, Tag, Comment
 from django.shortcuts import render, get_object_or_404
-from .forms import PostForm, CategoryForm, TagForm, FilterForm, CommentForm, TestForm
+from .forms import PostForm, CategoryForm, TagForm, FilterForm, CommentForm
 from django.http import Http404, JsonResponse
 from django.core import serializers
 
@@ -101,8 +101,6 @@ def tag_new(request):
     return render(request, 'blog/tag_new.html', {'form': form, 'title': 'Create a new tag'})
 
 
-# def tag_new(request):
-
 def add_ajax(request):
     if request.is_ajax():
         response = {'first-text': 'Lorem Ipsum is simply dummy text',
@@ -110,32 +108,3 @@ def add_ajax(request):
         return JsonResponse(response)
     else:
         raise Http404
-
-
-# def test(request):
-#     text =
-# return render(request, 'blog/test.html')
-def test(request):
-    all_data = Test_data.objects.all()
-    # if request.is_ajax():
-    #     response = {'first-text': str(random.randint(1, 10)) + " ", 'second-text': str(random.randint(11, 20)) + " "}
-    #     return JsonResponse(response)
-    # else:
-    #     return render(request, 'blog/test.html')
-    # if request.method == "POST":
-    #     form = TestForm(request.POST)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect('post_list')
-    if request.method == 'GET':
-        form = TestForm()
-        return render(request, 'blog/test.html', {'form': form, 'all_data': all_data})
-    if request.is_ajax and request.method == "POST":
-        form = TestForm(request.POST)
-        if form.is_valid():
-            instance = form.save()
-            ser_instance = serializers.serialize('json', [instance, ])
-            return JsonResponse({"instance": ser_instance}, status=200)
-        else:
-            return JsonResponse({'error': form.errors}, status=400)
-    return JsonResponse({"error": ""}, status=400)
