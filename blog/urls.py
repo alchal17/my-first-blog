@@ -1,5 +1,6 @@
 from django.urls import path
 from . import class_based_views
+import include
 
 urlpatterns = [
     path('', class_based_views.PostFormView.as_view(), name='post_list'),
