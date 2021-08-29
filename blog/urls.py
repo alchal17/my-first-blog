@@ -1,10 +1,9 @@
 from django.urls import path
 from . import class_based_views
-import include
 
 urlpatterns = [
     path('', class_based_views.PostFormView.as_view(), name='post_list'),
-    path('post/<int:pk>/', class_based_views.PostDetailCreateView.as_view(), name='post_detail'),
+    path('post/<int:pk>/', class_based_views.CommentList.as_view(), name='post_detail'),
     path('post/new/', class_based_views.PostCreateView.as_view(), name='post_new'),
     path('post/<int:pk>/edit/', class_based_views.PostUpdateView.as_view(), name='post_edit'),
     path('category/new', class_based_views.CategoryCreateView.as_view(), name='category_new'),

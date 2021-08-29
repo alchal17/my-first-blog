@@ -1,13 +1,8 @@
-import random
-
 from django.shortcuts import redirect
-from django.shortcuts import render
 from django.utils import timezone
-from .models import Post, Category, Tag, Comment
+from .models import Post, Comment
 from django.shortcuts import render, get_object_or_404
 from .forms import PostForm, CategoryForm, TagForm, FilterForm, CommentForm
-from django.http import Http404, JsonResponse
-from django.core import serializers
 
 
 def post_list(request):
@@ -99,12 +94,3 @@ def tag_new(request):
     else:
         form = TagForm()
     return render(request, 'blog/tag_new.html', {'form': form, 'title': 'Create a new tag'})
-
-
-def add_ajax(request):
-    if request.is_ajax():
-        response = {'first-text': 'Lorem Ipsum is simply dummy text',
-                    'second-text': 'to make a type specimen book. It has '}
-        return JsonResponse(response)
-    else:
-        raise Http404

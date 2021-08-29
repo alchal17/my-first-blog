@@ -4,15 +4,11 @@ from django.shortcuts import get_object_or_404
 from .forms import PostForm, CategoryForm, TagForm, FilterForm, CommentForm
 from django.views.generic import CreateView, FormView, UpdateView
 from django.urls import reverse_lazy, reverse
-from django.core import serializers
 from django.http import JsonResponse
-import locale
-from datetime import datetime
 from rest_framework.response import Response
-from rest_framework import status
 from blog.snippets.serializers import CommentSerializer
-from rest_framework.views import APIView
-from rest_framework.renderers import JSONRenderer
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from rest_framework import generics
 
 
 class PostFormView(FormView):
@@ -108,119 +104,22 @@ class PostUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(PostUpdateView, self).get_context_data(**kwargs)
-        context['title'] = f'Edit the post'
+        context['title'] = f'Edit {Post.objects.get(pk=self.pk).title} post'
         return context
 
+    def get(self, request, *args, **kwargs):
+        self.pk = self.kwargs['pk']
+        return super(PostUpdateView, self).get(request, *args, **kwargs)
 
-# class PostDetailCreateView(CreateView):
-#     form_class = CommentForm
-#     model = Comment
-#     template_name = 'blog/post_detail.html'
-#     pk_url_kwarg = 'pk'
-#
-#     def get(self, request, pk):
-#         self.pk = pk
-#         self.request = request
-#         return super(PostDetailCreateView, self).get(request, pk)
-#
-#     def get_success_url(self):
-#         return reverse('post_detail', kwargs={'pk': self.kwargs['pk']})
-#
-#     def get_context_data(self, **kwargs):
-#         post = Post.objects.get(pk=self.kwargs['pk'])
-#         context = super(PostDetailCreateView, self).get_context_data(**kwargs)
-#         context['comments'] = Comment.objects.filter(post=post).order_by('-published_date')
-#         context['title'] = f'Detail of {post.title} post'
-#         context['form'] = CommentForm
-#         context['post'] = post
-#         return context
-#
-#     # def post(self, request, *args, **kwargs):
-#     #     post = get_object_or_404(Post, pk=self.kwargs['pk'])
-#     #     if request.is_ajax:
-#     #         form = CommentForm(request.POST)
-#     #         if form.is_valid():
-#     #             locale.setlocale(locale.LC_ALL, "ru")
-#     #             new_comment = form.save(commit=False)
-#     #             new_comment.post = post
-#     #             new_comment.author = self.request.user
-#     #             new_comment.published_date = timezone.now()
-#     #             instance = form.save()
-#     #             today = datetime.today().strftime("%d %B %Y г. %H:%M")
-#     #             user = self.request.user.username
-#     #             json_comment = serializers.serialize('json', [new_comment, ])
-#     #             ser_instance = serializers.serialize('json', [instance, ])
-#     #             return JsonResponse({"instance": ser_instance, 'new_c': json_comment, 'today': today, 'user': user},
-#     #                                 status=200)
-#     #         else:
-#     #             return JsonResponse({'error': form.errors}, status=400)
-#     #     return JsonResponse({"error": ""}, status=400)
-#
-#     def post(self, request, *args, **kwargs):
-#         post = get_object_or_404(Post, pk=self.kwargs['pk'])
-#         if request.is_ajax:
-#             form = CommentForm(request.POST)
-#             if form.is_valid():
-#                 new_comment = form.save(commit=False)
-#                 new_comment.post = post
-#                 new_comment.author = self.request.user
-#                 new_comment.published_date = timezone.now()
-#                 instance = form.save()
-#                 # serializer = CommentSerializer(new_comment, instance, many=True)
-#                 # serializer = CommentSerializer(new_comment, many=True)
-#                 serializer = CommentSerializer(new_comment, many=True)
-#                 if serializer.is_valid():
-#                     json = JSONRenderer.render(serializer.data)
-#                     print(json)
-#                     return JsonResponse(json, status=status.HTTP_200_OK)
-#                 else:
-#                     return JsonResponse({'error': form.errors}, status=status.HTTP_400_BAD_REQUEST)
-#         return JsonResponse({"error": ""}, status=status.HTTP_400_BAD_REQUEST)
 
-class PostDetailCreateView(APIView):
-    form_class = CommentForm
-    model = Comment
-    template_name = 'blog/post_detail.html'
-    pk_url_kwarg = 'pk'
+class CommentList(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
+    renderer_classes = [TemplateHTMLRenderer]
 
-    def get(self, request, **kwargs):
-        post = Post.objects.get(pk=self.kwargs['pk'])
-        queryset = Comment.objects.filter(post=post).order_by('-published_date')
-        serializer = CommentSerializer(queryset, many=True)
-        return JsonResponse(JSONRenderer().render(serializer.data), safe=False)
-
-    def get_success_url(self):
-        return reverse('post_detail', kwargs={'pk': self.kwargs['pk']})
-
-    def get_context_data(self, **kwargs):
-        post = Post.objects.get(pk=self.kwargs['pk'])
-        context = super(PostDetailCreateView, self).get_context_data(**kwargs)
-        context['comments'] = Comment.objects.filter(post=post).order_by('-published_date')
-        context['title'] = f'Detail of {post.title} post'
-        context['form'] = CommentForm
-        context['post'] = post
-        return context
-
-    # def post(self, request, *args, **kwargs):
-    #     post = get_object_or_404(Post, pk=self.kwargs['pk'])
-    #     if request.is_ajax:
-    #         form = CommentForm(request.POST)
-    #         if form.is_valid():
-    #             locale.setlocale(locale.LC_ALL, "ru")
-    #             new_comment = form.save(commit=False)
-    #             new_comment.post = post
-    #             new_comment.author = self.request.user
-    #             new_comment.published_date = timezone.now()
-    #             instance = form.save()
-    #             today = datetime.today().strftime("%d %B %Y г. %H:%M")
-    #             user = self.request.user.username
-    #             json_comment = serializers.serialize('json', [new_comment, ])
-    #             ser_instance = serializers.serialize('json', [instance, ])
-    #             return JsonResponse({"instance": ser_instance, 'new_c': json_comment, 'today': today, 'user': user},
-    #                                 status=200)
-    #         else:
-    #             return JsonResponse({'error': form.errors}, status=400)
-    #     return JsonResponse({"error": ""}, status=400)
+    def get(self, request, pk):
+        post = Post.objects.get(pk=pk)
+        self.comments = Comment.objects.filter(post=post)
+        return super(CommentList, self).get(request, pk)
 
     def post(self, request, *args, **kwargs):
         post = get_object_or_404(Post, pk=self.kwargs['pk'])
@@ -231,14 +130,26 @@ class PostDetailCreateView(APIView):
                 new_comment.post = post
                 new_comment.author = self.request.user
                 new_comment.published_date = timezone.now()
-                instance = form.save()
-                # serializer = CommentSerializer(new_comment, instance, many=True)
-                # serializer = CommentSerializer(new_comment, many=True)
-                serializer = CommentSerializer(data=request.data)
-                if serializer.is_valid():
-                    json = JSONRenderer.render(serializer.data)
-                    print(json)
-                    return JsonResponse(json, status=status.HTTP_200_OK)
-                else:
-                    return JsonResponse({'error': form.errors}, status=status.HTTP_400_BAD_REQUEST)
-        return JsonResponse({"error": ""}, status=status.HTTP_400_BAD_REQUEST)
+                serializer = CommentSerializer(new_comment)
+                json_comment = JSONRenderer().render(serializer.data).decode('utf8')
+                return JsonResponse({'new_comment': json_comment}, status=200, safe=False)
+            else:
+                return JsonResponse({'error': form.errors}, status=400)
+        return JsonResponse({"error": ""}, status=400)
+
+    def get_queryset(self):
+        queryset = self.comments
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        response = super(CommentList, self).list(request, *args, **kwargs)
+        pk = self.kwargs['pk']
+        post = Post.objects.get(pk=pk)
+        response.title = f'Detail of {post.title} post'
+        response.form = CommentForm
+        response.comments = Comment.objects.filter(post=post).order_by('-published_date')
+        return Response({'title': response.title, 'post': post, 'form': response.form, 'comments': response.comments},
+                        template_name='blog/post_detail.html')
+
+    def get_success_url(self):
+        return reverse('post_detail', kwargs={'pk': self.kwargs['pk']})

@@ -1,6 +1,6 @@
 {% extends 'blog/base.html' %}
-
 {% block content %}
+
 <p id="test_txt"></p>
 <article class="post">
     <header>
@@ -24,7 +24,7 @@
         {% endif %}
     </aside>
     <div id="all_comments">
-    {% for c in comments%}
+        {% for c in comments%}
         <div class="comment">
             <aside>
                 <h4 class="author-name">{{ c.author }} {{ c.published_date }}</h4>
@@ -36,6 +36,7 @@
         {% endfor %}
     </div>
 </article>
+
 <script>
     $("#comment-form").submit(function (e) {
         e.preventDefault();
@@ -45,19 +46,18 @@
             url: "{% url 'post_detail' pk=post.pk %}",
             data: serializedData,
             success: function (response) {
+                console.log(response);
                 $("#comment-form").trigger('reset');
-                var new_c = JSON.parse(response["new_c"]);
-                var instance = JSON.parse(response["instance"]);
-                var fields = new_c[0]["fields"];
-                console.log(fields["user"])
+                var new_c = JSON.parse(response["new_comment"]);
+                console.log(new_c);
                 $("#all_comments").prepend(
                     `
                     <div class="comment">
                         <aside>
-                            <h4 class="author-name">${fields["user"]} ${fields["published_date"]}</h4>
+                            <h4 class="author-name">${Object.values(new_c["author"])} ${new_c["published_date"]}</h4>
                         </aside>
                         <aside>
-                            <h5 id="comment">${fields["comment_text"]}</h5>
+                            <h5 id="comment">${new_c["comment_text"]}</h5>
                         </aside>
                     </div>
                     `
@@ -69,4 +69,6 @@
         })
     })
 </script>
+
+
 {% endblock %}
