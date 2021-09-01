@@ -6,7 +6,7 @@ from django.views.generic import CreateView, FormView, UpdateView
 from django.urls import reverse_lazy, reverse
 from django.http import JsonResponse
 from rest_framework.response import Response
-from blog.snippets.serializers import CommentSerializer
+from blog.snippets.serializers import CommentSerializer, TagSerializer
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework import generics
 
@@ -116,11 +116,6 @@ class CommentList(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
     renderer_classes = [TemplateHTMLRenderer]
 
-    def get(self, request, pk):
-        post = Post.objects.get(pk=pk)
-        self.comments = Comment.objects.filter(post=post)
-        return super(CommentList, self).get(request, pk)
-
     def post(self, request, *args, **kwargs):
         post = get_object_or_404(Post, pk=self.kwargs['pk'])
         if request.is_ajax:
@@ -130,6 +125,7 @@ class CommentList(generics.ListCreateAPIView):
                 new_comment.post = post
                 new_comment.author = self.request.user
                 new_comment.published_date = timezone.now()
+                form.save()
                 serializer = CommentSerializer(new_comment)
                 json_comment = JSONRenderer().render(serializer.data).decode('utf8')
                 return JsonResponse({'new_comment': json_comment}, status=200, safe=False)
@@ -138,7 +134,10 @@ class CommentList(generics.ListCreateAPIView):
         return JsonResponse({"error": ""}, status=400)
 
     def get_queryset(self):
-        queryset = self.comments
+        pk = self.kwargs['pk']
+        post = Post.objects.get(pk=pk)
+        comments = Comment.objects.filter(post=post).order_by('-published_date')
+        queryset = comments
         return queryset
 
     def list(self, request, *args, **kwargs):
@@ -153,3 +152,33 @@ class CommentList(generics.ListCreateAPIView):
 
     def get_success_url(self):
         return reverse('post_detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class TagList(generics.ListCreateAPIView):
+    serializer_class = TagSerializer
+    renderer_classes = [TemplateHTMLRenderer]
+
+    def get_queryset(self):
+        queryset = Tag.objects.all()
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        form = TagForm(request.POST)
+        if request.is_ajax:
+            if form.is_valid():
+                new_tag = form.save(commit=False)
+                form.save()
+                serializer = TagSerializer(new_tag)
+                json_tag = JSONRenderer().render(serializer.data).decode('utf8')
+                return JsonResponse({'new_tag': json_tag}, status=200, safe=False)
+            else:
+                return JsonResponse({'error': form.errors}, status=400)
+        return JsonResponse({"error": ""}, status=400)
+
+    def list(self, request, *args, **kwargs):
+        response = super(TagList, self).list(request, *args, **kwargs)
+        response.tags = Tag.objects.all()
+        response.form = TagForm
+        response.title = 'Create a new tag'
+        return Response({'tags': response.tags, 'form': response.form, 'title': response.title},
+                        template_name='blog/tag_new.html')

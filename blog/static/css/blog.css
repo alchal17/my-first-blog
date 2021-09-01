@@ -151,3 +151,21 @@ body{
 .orange-text{
     color: #FF4500;
 }
+
+.tag-list{
+    margin-top: 451px;
+    color: #FFFFFF;
+}
+
+.exit-button{
+    background-color: #05386B;
+    border: none;
+    color: white;
+    padding: 4px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    float: right;
+    padding-left: 10px;
+}

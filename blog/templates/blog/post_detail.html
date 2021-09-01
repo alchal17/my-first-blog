@@ -1,7 +1,6 @@
 {% extends 'blog/base.html' %}
 {% block content %}
 
-<p id="test_txt"></p>
 <article class="post">
     <header>
         <h1>Category: {{ post.category }}</h1>
@@ -27,7 +26,7 @@
         {% for c in comments%}
         <div class="comment">
             <aside>
-                <h4 class="author-name">{{ c.author }} {{ c.published_date }}</h4>
+                <h4 class="author-name">{{ c.author }} {{ c.published_date | date:"d F, h:i A, Y"}}</h4>
             </aside>
             <aside>
                 <h5 id="comment">{{ c.comment_text }}</h5>
@@ -46,10 +45,8 @@
             url: "{% url 'post_detail' pk=post.pk %}",
             data: serializedData,
             success: function (response) {
-                console.log(response);
                 $("#comment-form").trigger('reset');
                 var new_c = JSON.parse(response["new_comment"]);
-                console.log(new_c);
                 $("#all_comments").prepend(
                     `
                     <div class="comment">

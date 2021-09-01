@@ -7,5 +7,6 @@ urlpatterns = [
     path('post/new/', class_based_views.PostCreateView.as_view(), name='post_new'),
     path('post/<int:pk>/edit/', class_based_views.PostUpdateView.as_view(), name='post_edit'),
     path('category/new', class_based_views.CategoryCreateView.as_view(), name='category_new'),
-    path('tag/new/', class_based_views.TagCreateView.as_view(), name='tag_new'),
+    # path('tag/new/', class_based_views.TagCreateView.as_view(), name='tag_new'),
+    path('tag/new/', class_based_views.TagList.as_view(), name='tag_new'),
 ]
