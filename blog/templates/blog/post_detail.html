@@ -22,6 +22,7 @@
         </button>
         {% endif %}
     </aside>
+    <span id="test"></span>
     <div id="all_comments">
         {% for c in comments%}
         <div class="comment">
@@ -37,6 +38,32 @@
 </article>
 
 <script>
+    $(document).ready(function(){
+        $.ajax({
+            url: "{% url 'post_detail' pk=post.pk %}",
+            datatype: "json",
+            success: function (response){
+                    for (let value of response) {
+                        console.log(value.comment_text);
+                        console.log(value.published_date);
+                        console.log(value.author.username);
+                        $("#all_comments").prepend(
+                            `
+                            <div class="comment">
+                                <aside>
+                                    <h4 class="author-name">${value.author.username} ${value.published_date}</h4>
+                                </aside>
+                                <aside>
+                                    <h5 id="comment">${value.comment_text}</h5>
+                                </aside>
+                            </div>
+                            `
+                )
+                    }
+                  }
+               });
+            });
+
     $("#comment-form").submit(function (e) {
         e.preventDefault();
         var serializedData = $(this).serialize();

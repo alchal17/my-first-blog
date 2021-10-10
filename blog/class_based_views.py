@@ -1,3 +1,4 @@
+import rest_framework.views
 from django.utils import timezone
 from .models import Post, Category, Tag, Comment
 from django.shortcuts import get_object_or_404
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 from blog.snippets.serializers import CommentSerializer, TagSerializer
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework import generics
+from django.shortcuts import render
 
 
 class PostFormView(FormView):
@@ -17,15 +19,15 @@ class PostFormView(FormView):
     form_class = FilterForm
     success_url = reverse_lazy('post_list')
 
-    def get(self, request, *args, **kwargs):
-        self.request = request
-        return super(PostFormView, self).get(request, *args, **kwargs)
+    # def get(self, request, *args, **kwargs):
+    #     self.request = request
+    # return super(PostFormView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        context['form'] = form
+        # form_class = self.get_form_class()
+        # form = self.get_form(form_class)
+        # context['form'] = form
         context['posts'] = Post.objects.all()
         if self.request.GET.get("tags"):
             context['posts'] = Post.objects.filter(tag=self.request.GET.get("tags"))
@@ -43,10 +45,10 @@ class PostFormView(FormView):
         context['posts'] = filtered_category_posts
         return self.render_to_response(context)
 
-    def form_invalid(self, form, **kwargs):
-        context = self.get_context_data(**kwargs)
-        context['form'] = form
-        return self.render_to_response(context)
+    # def form_invalid(self, form, **kwargs):
+    #     context = self.get_context_data(**kwargs)
+    #     context['form'] = form
+    #     return self.render_to_response(context)
 
 
 class TagCreateView(CreateView):
@@ -112,55 +114,15 @@ class PostUpdateView(UpdateView):
         return super(PostUpdateView, self).get(request, *args, **kwargs)
 
 
-class CommentList(generics.ListCreateAPIView):
-    serializer_class = CommentSerializer
-    renderer_classes = [TemplateHTMLRenderer]
-
-    def post(self, request, *args, **kwargs):
-        post = get_object_or_404(Post, pk=self.kwargs['pk'])
-        if request.is_ajax:
-            form = CommentForm(request.POST)
-            if form.is_valid():
-                new_comment = form.save(commit=False)
-                new_comment.post = post
-                new_comment.author = self.request.user
-                new_comment.published_date = timezone.now()
-                form.save()
-                serializer = CommentSerializer(new_comment)
-                json_comment = JSONRenderer().render(serializer.data).decode('utf8')
-                return JsonResponse({'new_comment': json_comment}, status=200, safe=False)
-            else:
-                return JsonResponse({'error': form.errors}, status=400)
-        return JsonResponse({"error": ""}, status=400)
-
-    def get_queryset(self):
-        pk = self.kwargs['pk']
-        post = Post.objects.get(pk=pk)
-        comments = Comment.objects.filter(post=post).order_by('-published_date')
-        queryset = comments
-        return queryset
-
-    def list(self, request, *args, **kwargs):
-        response = super(CommentList, self).list(request, *args, **kwargs)
-        pk = self.kwargs['pk']
-        post = Post.objects.get(pk=pk)
-        response.title = f'Detail of {post.title} post'
-        response.form = CommentForm
-        response.comments = Comment.objects.filter(post=post).order_by('-published_date')
-        return Response({'title': response.title, 'post': post, 'form': response.form, 'comments': response.comments},
-                        template_name='blog/post_detail.html')
-
-    def get_success_url(self):
-        return reverse('post_detail', kwargs={'pk': self.kwargs['pk']})
-
-
 class TagList(generics.ListCreateAPIView):
     serializer_class = TagSerializer
     renderer_classes = [TemplateHTMLRenderer]
+    model = Tag
+    queryset = Tag.objects.all()
 
-    def get_queryset(self):
-        queryset = Tag.objects.all()
-        return queryset
+    # def get_queryset(self):
+    #     queryset = Tag.objects.all()
+    #     return queryset
 
     def post(self, request, *args, **kwargs):
         form = TagForm(request.POST)
@@ -182,3 +144,36 @@ class TagList(generics.ListCreateAPIView):
         response.title = 'Create a new tag'
         return Response({'tags': response.tags, 'form': response.form, 'title': response.title},
                         template_name='blog/tag_new.html')
+
+
+class CommentList(generics.ListCreateAPIView):
+
+    def list(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        comments = Comment.objects.filter(post=post).order_by('-published_date')
+        ser_comments = CommentSerializer(comments, many=True)
+        return Response(ser_comments.data)
+
+    def post(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        if request.is_ajax:
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                new_comment = form.save(commit=False)
+                new_comment.post = post
+                new_comment.author = self.request.user
+                new_comment.published_date = timezone.now()
+                form.save()
+                serializer = CommentSerializer(new_comment)
+                json_comment = JSONRenderer().render(serializer.data).decode('utf8')
+                return JsonResponse({'new_comment': json_comment}, status=200, safe=False)
+            else:
+                return JsonResponse({'error': form.errors}, status=400)
+        return JsonResponse({"error": ""}, status=400)
+
+
+def homepage(request, pk):
+    post = Post.objects.get(pk=pk)
+    form = CommentForm()
+    title = f'Detail of {post.title} post'
+    return render(request, 'blog/post_detail.html', {'post': post, 'form': form, 'title': title})
