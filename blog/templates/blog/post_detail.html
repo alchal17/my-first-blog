@@ -44,9 +44,6 @@
             datatype: "json",
             success: function (response){
                     for (let value of response) {
-                        console.log(value.comment_text);
-                        console.log(value.published_date);
-                        console.log(value.author.username);
                         $("#all_comments").prepend(
                             `
                             <div class="comment">
