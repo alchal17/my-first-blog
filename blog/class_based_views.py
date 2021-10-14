@@ -120,10 +120,6 @@ class TagList(generics.ListCreateAPIView):
     model = Tag
     queryset = Tag.objects.all()
 
-    # def get_queryset(self):
-    #     queryset = Tag.objects.all()
-    #     return queryset
-
     def post(self, request, *args, **kwargs):
         form = TagForm(request.POST)
         if request.is_ajax:
@@ -147,11 +143,15 @@ class TagList(generics.ListCreateAPIView):
 
 
 class CommentList(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
 
-    def list(self, request, *args, **kwargs):
+    def get_queryset(self):
         post = get_object_or_404(Post, pk=self.kwargs['pk'])
         comments = Comment.objects.filter(post=post).order_by('-published_date')
-        ser_comments = CommentSerializer(comments, many=True)
+        return comments
+
+    def list(self, request, *args, **kwargs):
+        ser_comments = CommentSerializer(self.get_queryset(), many=True)
         return Response(ser_comments.data)
 
     def post(self, request, *args, **kwargs):

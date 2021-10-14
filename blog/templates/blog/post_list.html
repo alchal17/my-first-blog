@@ -37,7 +37,7 @@
         </button>
         {% endfor %}
         <h2>
-            <a href="{% url 'post_detail' pk=post.pk %}" class="post-title">{{ post.title }}</a>
+            <a href="{% url 'detail_of_post' pk=post.pk %}" class="post-title">{{ post.title }}</a>
         </h2>
         <p>{{ post.text|linebreaksbr }}</p>
         <footer>{{ post.published_date }}</footer>
