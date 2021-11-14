@@ -1,10 +1,19 @@
 {% extends 'blog/base.html' %}
 {% block content %}
-
+{% load static %}
+<img src="{% static 'images/star.svg' %}" id="star" hidden>
+<img src="{% static 'images/empty_star.svg' %}" id="empty_star" hidden>
 <article class="post">
     <header>
         <h1>Category: {{ post.category }}</h1>
     </header>
+    {% if user.is_authenticated %}
+    <img src="{% static 'images/empty_star.svg' %}" id="test1" onclick="change_rating(1)">
+    <img src="{% static 'images/empty_star.svg' %}" id="test2" onclick="change_rating(2)">
+    <img src="{% static 'images/empty_star.svg' %}" id="test3" onclick="change_rating(3)">
+    <img src="{% static 'images/empty_star.svg' %}" id="test4" onclick="change_rating(4)">
+    <img src="{% static 'images/empty_star.svg' %}" id="test5" onclick="change_rating(5)">
+    {% endif %}
     <h2>Title: {{ post.title }}</h2>
     <article>Text: {{ post.text|linebreaksbr }}</article>
     {% if user.is_authenticated %}
@@ -26,30 +35,56 @@
     </div>
 </article>
 
+<script language="JavaScript">
+    function change_rating(n) {
+        let url_empty_star = document.getElementById("empty_star").src
+        let url_star = document.getElementById("star").src
+        for(let i = 1; i<6; i++) {
+            id = 'test' + String(i);
+            document.getElementById(id).src = (i<=n) ? url_star : url_empty_star;
+        }
 
-<script>
+        $.ajax({
+        type: 'POST',
+        url: "{% url 'post_detail' pk=post.pk %}",
+        data:  {
+            'number': n,
+             csrfmiddlewaretoken: '{{ csrf_token }}',
+            },
+        dataType: 'json',
+        })
+    }
+
+
     $(document).ready(function(){
         $.ajax({
             url: "{% url 'post_detail' pk=post.pk %}",
             datatype: "json",
             success: function (response){
-                    for (let value of response) {
+                    for (let i = 0; i<response.length-1; i++) {
                         $("#all_comments").prepend(
                             `
                             <div class="comment">
                                 <aside>
-                                    <h4 class="author-name">${value.author.username} ${value.published_date}</h4>
+                                    <h4 class="author-name">${response[i].author.username} ${response[i].published_date}</h4>
                                 </aside>
                                 <aside>
-                                    <h5 id="comment">${value.comment_text}</h5>
+                                    <h5 id="comment">${response[i].comment_text}</h5>
                                 </aside>
                             </div>
                             `
-                )
+                        )
                     }
+                    let url_empty_star = document.getElementById("empty_star").src
+                    let url_star = document.getElementById("star").src
+                    for(let i = 1; i<6; i++) {
+                        id = 'test' + String(i);
+                        document.getElementById(id).src = (i<=Object.values(response.at(-1))) ? url_star : url_empty_star;
+                       }
                   }
                });
             });
+
 
     $("#comment-form").submit(function (e) {
         e.preventDefault();
@@ -79,6 +114,7 @@
             }
         })
     })
+
 </script>
 
 

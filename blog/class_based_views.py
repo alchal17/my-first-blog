@@ -1,16 +1,16 @@
-import rest_framework.views
 from django.utils import timezone
-from .models import Post, Category, Tag, Comment
+from .models import Post, Category, Tag, Comment, Rating
 from django.shortcuts import get_object_or_404
 from .forms import PostForm, CategoryForm, TagForm, FilterForm, CommentForm
 from django.views.generic import CreateView, FormView, UpdateView
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.http import JsonResponse
 from rest_framework.response import Response
 from blog.snippets.serializers import CommentSerializer, TagSerializer
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework import generics
 from django.shortcuts import render
+from django.db.models import Avg
 
 
 class PostFormView(FormView):
@@ -19,15 +19,8 @@ class PostFormView(FormView):
     form_class = FilterForm
     success_url = reverse_lazy('post_list')
 
-    # def get(self, request, *args, **kwargs):
-    #     self.request = request
-    # return super(PostFormView, self).get(request, *args, **kwargs)
-
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        # form_class = self.get_form_class()
-        # form = self.get_form(form_class)
-        # context['form'] = form
         context['posts'] = Post.objects.all()
         if self.request.GET.get("tags"):
             context['posts'] = Post.objects.filter(tag=self.request.GET.get("tags"))
@@ -44,11 +37,6 @@ class PostFormView(FormView):
                 'published_date').distinct()
         context['posts'] = filtered_category_posts
         return self.render_to_response(context)
-
-    # def form_invalid(self, form, **kwargs):
-    #     context = self.get_context_data(**kwargs)
-    #     context['form'] = form
-    #     return self.render_to_response(context)
 
 
 class TagCreateView(CreateView):
@@ -142,7 +130,7 @@ class TagList(generics.ListCreateAPIView):
                         template_name='blog/tag_new.html')
 
 
-class CommentList(generics.ListCreateAPIView):
+class Comment_rating_List(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
@@ -151,11 +139,26 @@ class CommentList(generics.ListCreateAPIView):
         return comments
 
     def list(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
         ser_comments = CommentSerializer(self.get_queryset(), many=True)
-        return Response(ser_comments.data)
+        rating_dict = {'rating': round(post.average_rating)}
+        new_ser_comments_rating = list(ser_comments.data)
+        new_ser_comments_rating.append(rating_dict)
+        return Response(new_ser_comments_rating)
 
     def post(self, request, *args, **kwargs):
         post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        number = request.POST.get('number', None)
+        if number:
+            if not Rating.objects.filter(author=self.request.user, post=post):
+                Rating.objects.create(post=post, author=self.request.user, value=number)
+            else:
+                rating = Rating.objects.get(author=self.request.user, post=post)
+                rating.value = number
+                rating.save()
+            av_rating = Rating.objects.filter(post=post)
+            post.average_rating = round(av_rating.aggregate(Avg('value'))['value__avg'], 2)
+            post.save()
         if request.is_ajax:
             form = CommentForm(request.POST)
             if form.is_valid():

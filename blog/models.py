@@ -26,6 +26,7 @@ class Post(models.Model):
     published_date = models.DateTimeField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     tag = models.ManyToManyField(Tag)
+    average_rating = models.FloatField(default=0)
 
     def __str__(self):
         return self.title
@@ -39,3 +40,12 @@ class Comment(models.Model):
 
     def __str__(self):
         return self.comment_text
+
+
+class Rating(models.Model):
+    value = models.IntegerField()
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, verbose_name='author')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.value)
