@@ -1,0 +1,43 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<form method="POST" id="tag-form">{% csrf_token %}
+    {{ form.as_p}}
+    <button type="submit" class="save-button">Save</button>
+</form>
+
+<div class="author-name">
+    <h2>Already existing tags:</h2>
+    <div id="all_tags">
+        {% for tag in tags%}
+            <p>{{ tag }}</p>
+        {% endfor %}
+    </div>
+</div>
+
+<a class="exit-button" href="{% url 'post_list' %}">Main page</a>
+
+<script>
+    $("#tag-form").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'tag_new' %}",
+            data: serializedData,
+            success: function (response) {
+                $("#tag-form").trigger('reset');
+                var new_t = JSON.parse(response["new_tag"]);
+                $("#all_tags").prepend(
+                    `
+                    <p>${new_t["tag_title"]}</p>
+                    `
+                )
+            },
+            error: function (response) {
+                alert("error");
+            }
+        })
+    })
+</script>
+{% endblock %}

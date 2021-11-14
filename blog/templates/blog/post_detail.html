@@ -1,20 +1,85 @@
 {% extends 'blog/base.html' %}
-
 {% block content %}
-    <article class="post">
-        <aside class="actions">
-            {% if user.is_authenticated %}
-                <a class="btn btn-default" href="{% url 'post_edit' pk=post.pk %}">
-                    {% include './icons/pencil-fill.svg' %}
-                </a>
-            {% endif %}
-        </aside>
-        {% if post.published_date %}
-            <time class="date">
-                {{ post.published_date }}
-            </time>
+
+<article class="post">
+    <header>
+        <h1>Category: {{ post.category }}</h1>
+    </header>
+    <h2>Title: {{ post.title }}</h2>
+    <article>Text: {{ post.text|linebreaksbr }}</article>
+    {% if user.is_authenticated %}
+    <form class="comment-form" method="POST" id="comment-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="comment-button">Add comment</button>
+    </form>
+    {% endif %}
+    <aside>
+        {% if user.is_authenticated %}
+        <button type="button" style="float:right; margin-top: -550px" class="new-button">
+            <a href="{% url 'post_edit' pk=post.pk %}" class="new-c">
+                <div class="white-text">Edit {{ post.title }}</div>
+            </a>
+        </button>
         {% endif %}
-        <h2>{{ post.title }}</h2>
-        <p>{{ post.text|linebreaksbr }}</p>
-    </article>
+    </aside>
+    <div id="all_comments">
+    </div>
+</article>
+
+
+<script>
+    $(document).ready(function(){
+        $.ajax({
+            url: "{% url 'post_detail' pk=post.pk %}",
+            datatype: "json",
+            success: function (response){
+                    for (let value of response) {
+                        $("#all_comments").prepend(
+                            `
+                            <div class="comment">
+                                <aside>
+                                    <h4 class="author-name">${value.author.username} ${value.published_date}</h4>
+                                </aside>
+                                <aside>
+                                    <h5 id="comment">${value.comment_text}</h5>
+                                </aside>
+                            </div>
+                            `
+                )
+                    }
+                  }
+               });
+            });
+
+    $("#comment-form").submit(function (e) {
+        e.preventDefault();
+        var serializedData = $(this).serialize();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'post_detail' pk=post.pk %}",
+            data: serializedData,
+            success: function (response) {
+                $("#comment-form").trigger('reset');
+                var new_c = JSON.parse(response["new_comment"]);
+                $("#all_comments").prepend(
+                    `
+                    <div class="comment">
+                        <aside>
+                            <h4 class="author-name">${Object.values(new_c["author"])} ${new_c["published_date"]}</h4>
+                        </aside>
+                        <aside>
+                            <h5 id="comment">${new_c["comment_text"]}</h5>
+                        </aside>
+                    </div>
+                    `
+                )
+            },
+            error: function (response) {
+                alert("error");
+            }
+        })
+    })
+</script>
+
+
 {% endblock %}

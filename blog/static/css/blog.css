@@ -1,77 +1,171 @@
-body {
-    padding-left: 100px;
-}
-h1 a, h2 a {
-    color: #ff0000;
-    font-family: 'Lobster';
-}
-.page-header {
-    background-color: #000080;
-    margin-top: 0;
-    margin-bottom: 40px;
-    padding: 20px 20px 20px 40px;
-}
-
-.page-header h1,
-.page-header h1 a,
-.page-header h1 a:visited,
-.page-header h1 a:active {
-    color: #ffffff;
-    font-size: 36pt;
-    text-decoration: none;
-}
-
-h1,
-h2,
-h3,
-h4 {
-    font-family: 'Lobster', cursive;
-}
-
-.date {
-    color: #828282;
-}
-
-.save {
+.filter {
     float: right;
 }
 
-.post-form textarea,
-.post-form input {
-    width: 100%;
+.new-c{
+    font-size: 24pt;
+    margin-bottom: 100pt;
 }
 
-.top-menu,
-.top-menu:hover,
-.top-menu:visited {
-    color: #ffffff;
+.top-menu{
     float: right;
-    font-size: 26pt;
-    margin-right: 20px;
+    margin-top: -40pt
 }
 
-.post {
-    margin-bottom: 70px;
+.post{
+    margin-top: 40px;
+    color: #FFFFFF;
 }
 
-.post h2 a,
-.post h2 a:visited {
-    color: #000000;
+.category-tag{
+    color: #05386B;
 }
 
-.post > .date,
-.post > .actions {
-    float: right;
+ul{
+    list-style-type: none;
 }
 
 .btn-default,
-.btn-default:visited {
+.btn-default:visited{
     color: #C25100;
     background: none;
     border-color: #C25100;
 }
 
-.btn-default:hover {
+.base-header{
+    font-size: 40pt;
+    color: #05386B;
+}
+
+.save-button{
+    float: right;
+    background-color: #EDF5E1;
+    border: none;
+    color: black;
+    padding: 4px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+.comment{
+    margin-top: 45px;
+}
+
+.comment-button{
+    float: right;
+    background-color: #EDF5E1;
+    border: none;
+    color: black;
+    padding: 4px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: -44px;
+
+}
+
+.author-name{
+    color: #05386B;
+    font-family: 'Lobster';
+    margin-bottom: 20px;
+}
+
+.edit-button{
+    float: right;
+    margin-top: -450pt;
+}
+
+.comment-form{
+    margin-top: 300pt;
+}
+
+body{
+    background-color: #5CDB95;
+}
+
+.page-header{
+    font-size: 40pt;
+}
+
+.post-title{
+    color:#FFFFFF;
+    font-size: 20pt;
+}
+
+.new-button {
+  background-color: #05386B;
+  border: none;
+  color: white;
+  padding: 4px 22px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.new-button a:active{
+    color: red;
+}
+
+.new-button:hover {
+  text-decoration: none;
+  text-justify: none;
+  color: white;
+}
+
+.white-text{
     color: #FFFFFF;
-    background-color: #C25100;
+}
+
+.tag-button{
+  background-color: #EDF5E1;
+  border: none;
+  color: white;
+  padding: 3px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  height: 30px;
+}
+
+.blue-text{
+    color: #05386B;
+    font-size: 14px;
+}
+
+.new-button .new-c{
+    text-decoration: none;
+}
+
+.body-light{
+    background-color: #5CDB95;
+}
+
+.body-dark{
+    background-color: #000000;
+}
+
+.orange-text{
+    color: #FF4500;
+}
+
+.tag-list{
+    margin-top: 451px;
+    color: #FFFFFF;
+}
+
+.exit-button{
+    background-color: #05386B;
+    border: none;
+    color: white;
+    padding: 4px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    float: right;
+    padding-left: 10px;
 }

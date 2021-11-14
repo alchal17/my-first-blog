@@ -1,13 +1,46 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+{% if user.is_authenticated %}
+<button type="button" class="new-button">
+    <a href="{% url 'category_new' %}" class="new-c">
+        <p class="white-text">New Category</p>
+    </a>
+</button>
+<button type="button" class="new-button">
+    <a href="{% url 'tag_new' %}" class="new-c">
+        <p class="white-text">New Tag</p>
+    </a>
+</button>
+<button type="button" class="new-button">
+    <a href="{% url 'post_new' %}" class="new-c">
+        <p class="white-text">New post</p>
+    </a>
+</button>
+
+
+    {% endif %}
+
+    <form method="POST" class="filter" style="list-style-type: none;">{% csrf_token %}
+        {{ form.as_p}}
+        <button type="submit" class="new-button">Apply filters</button>
+        <a class="new-button" href="{% url 'post_list' %}">Clear filters</a>
+    </form>
+
     {% for post in posts %}
-        <article class="post">
-            <time class="date">
-                {{ post.published_date }}
-            </time>
-            <h2><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h2>
-            <p>{{ post.text|linebreaksbr }}</p>
-        </article>
+    <article class="post">
+        <h3 class="category-tag">Category: {{ post.category }}</h3>
+        <strong class="category-tag">Tag: </strong>
+        {% for t in post.tag.all %}
+        <button type="button" class="tag-button">
+            <a href="{% url 'post_list' %}?tags={{t.pk}}" class="blue-text">{{ t.tag_title }}</a>
+        </button>
+        {% endfor %}
+        <h2>
+            <a href="{% url 'detail_of_post' pk=post.pk %}" class="post-title">{{ post.title }}</a>
+        </h2>
+        <p>{{ post.text|linebreaksbr }}</p>
+        <footer>{{ post.published_date }}</footer>
+    </article>
     {% endfor %}
-{% endblock %}
+    {% endblock %}
