@@ -144,7 +144,6 @@ class Comment_rating_List(generics.ListCreateAPIView):
         rating_dict = {'rating': round(post.average_rating)}
         new_ser_comments_rating = list(ser_comments.data)
         new_ser_comments_rating.append(rating_dict)
-        print(new_ser_comments_rating)
         return Response(new_ser_comments_rating)
 
     def post(self, request, *args, **kwargs):
