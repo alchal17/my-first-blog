@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.shortcuts import reverse
+from django.core.exceptions import ValidationError
 
 
 class Category(models.Model):
@@ -26,7 +27,6 @@ class Post(models.Model):
     published_date = models.DateTimeField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     tag = models.ManyToManyField(Tag)
-    average_rating = models.FloatField(default=0)
 
     def __str__(self):
         return self.title
@@ -43,9 +43,13 @@ class Comment(models.Model):
 
 
 class Rating(models.Model):
-    value = models.IntegerField()
+    value = models.IntegerField(choices=((1, 1), (2, 2), (3, 3), (4, 4), (5, 5)))
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, verbose_name='author')
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.value)
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        return super().save(*args, **kwargs)

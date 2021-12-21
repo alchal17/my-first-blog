@@ -10,7 +10,11 @@ from blog.snippets.serializers import CommentSerializer, TagSerializer
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework import generics
 from django.shortcuts import render
-from django.db.models import Avg
+from django.db.models import Avg, Func
+
+
+class Round(Func):
+    function = 'ROUND'
 
 
 class PostFormView(FormView):
@@ -21,7 +25,8 @@ class PostFormView(FormView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['posts'] = Post.objects.all()
+        posts = Post.objects.annotate(avg_rating=Round(Avg('rating__value'), 2)).order_by('published_date')
+        context['posts'] = posts
         if self.request.GET.get("tags"):
             context['posts'] = Post.objects.filter(tag=self.request.GET.get("tags"))
         return context
@@ -130,7 +135,7 @@ class TagList(generics.ListCreateAPIView):
                         template_name='blog/tag_new.html')
 
 
-class Comment_rating_List(generics.ListCreateAPIView):
+class Comment_Rating_List(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
 
     def get_queryset(self):
@@ -140,9 +145,18 @@ class Comment_rating_List(generics.ListCreateAPIView):
 
     def list(self, request, *args, **kwargs):
         post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        post_ratings = Rating.objects.filter(post=post)
+        if not Rating.objects.filter(author=self.request.user, post=post).exists():
+            if not Rating.objects.filter(post=post).exists():
+                rating_dict = {'rating': 0}
+            else:
+                average_rating = round(post_ratings.aggregate(Avg('value'))['value__avg'], 2)
+                rating_dict = {'rating': average_rating}
+        else:
+            rating = Rating.objects.get(author=self.request.user, post=post).value
+            rating_dict = {'rating': rating}
         ser_comments = CommentSerializer(self.get_queryset(), many=True)
-        rating_dict = {'rating': round(post.average_rating)}
-        new_ser_comments_rating = list(ser_comments.data)
+        new_ser_comments_rating = ser_comments.data
         new_ser_comments_rating.append(rating_dict)
         return Response(new_ser_comments_rating)
 
@@ -150,15 +164,9 @@ class Comment_rating_List(generics.ListCreateAPIView):
         post = get_object_or_404(Post, pk=self.kwargs['pk'])
         number = request.POST.get('number', None)
         if number:
-            if not Rating.objects.filter(author=self.request.user, post=post):
-                Rating.objects.create(post=post, author=self.request.user, value=number)
-            else:
-                rating = Rating.objects.get(author=self.request.user, post=post)
-                rating.value = number
-                rating.save()
-            av_rating = Rating.objects.filter(post=post)
-            post.average_rating = round(av_rating.aggregate(Avg('value'))['value__avg'], 2)
-            post.save()
+            rating, created = Rating.objects.update_or_create(author=self.request.user, post=post,
+                                                              defaults={'value': number})
+            rating.save()
         if request.is_ajax:
             form = CommentForm(request.POST)
             if form.is_valid():

@@ -37,13 +37,6 @@
 
 <script language="JavaScript">
     function change_rating(n) {
-        let url_empty_star = document.getElementById("empty_star").src
-        let url_star = document.getElementById("star").src
-        for(let i = 1; i<6; i++) {
-            id = 'test' + String(i);
-            document.getElementById(id).src = (i<=n) ? url_star : url_empty_star;
-        }
-
         $.ajax({
         type: 'POST',
         url: "{% url 'post_detail' pk=post.pk %}",
@@ -53,6 +46,14 @@
             },
         dataType: 'json',
         })
+
+        let url_empty_star = document.getElementById("empty_star").src
+        let url_star = document.getElementById("star").src
+        for(let i = 1; i<6; i++) {
+            id = 'test' + String(i);
+            document.getElementById(id).src = (i<=n) ? url_star : url_empty_star;
+        }
+
     }
 
 
@@ -110,11 +111,10 @@
                 )
             },
             error: function (response) {
-                alert("error");
+                console.log("error");
             }
         })
     })
-
 </script>
 
 

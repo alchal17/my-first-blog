@@ -40,12 +40,15 @@
             <a href="{% url 'detail_of_post' pk=post.pk %}" class="post-title">{{ post.title }}</a>
         </h2>
         <p>{{ post.text|linebreaksbr }}</p>
-            {% if post.average_rating != 0 %}
-            <h5 class="blue-text">Average rating: {{ post.average_rating }}</h5>
+            {% if post.avg_rating != None %}
+            <h5 class="blue-text">Average rating: {{ post.avg_rating }}</h5>
             {% else %}
-            <h5 class="blue-text">Average rating: This post hasn't got any rating yet</h5>
+            <h5 class="blue-text">Average rating: This post hasn't recieved any rating yet</h5>
             {% endif %}
         <footer>{{ post.published_date }}</footer>
     </article>
+    <script>
+
+    </script>
     {% endfor %}
     {% endblock %}
