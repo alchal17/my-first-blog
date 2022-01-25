@@ -1,6 +1,13 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+{% if error_list %}
+
+{% for error in error_list %}
+<header><h2>{{ error }}</h2></header>
+{% endfor %}
+
+{% elif user.is_authenticated %}
 <header><h2>Edit post</h2></header>
 <form method="POST">{% csrf_token %}
     {{ form.as_p }}
@@ -16,4 +23,5 @@
         <p class="white-text">New Tag</p>
     </a>
 </button>
+{% endif %}
 {% endblock %}

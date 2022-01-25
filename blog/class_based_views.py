@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from blog.snippets.serializers import CommentSerializer, TagSerializer
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework import generics
-from django.shortcuts import render
+from django.shortcuts import render, reverse, redirect
 from django.db.models import Avg, Func
 
 
@@ -23,25 +23,28 @@ class PostFormView(FormView):
     form_class = FilterForm
     success_url = reverse_lazy('post_list')
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
+    def get(self, request, *args, **kwargs):
         posts = Post.objects.annotate(avg_rating=Round(Avg('rating__value'), 2)).order_by('published_date')
-        context['posts'] = posts
         if self.request.GET.get("tags"):
-            context['posts'] = Post.objects.filter(tag=self.request.GET.get("tags"))
-        return context
+            posts = Post.objects.filter(tag=self.request.GET.get("tags")).annotate(
+                avg_rating=Round(Avg('rating__value'), 2)).order_by('published_date')
+        return render(request, 'blog/post_list.html', {'posts': posts, 'form': self.form_class}, status=201)
 
     def form_valid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
         filtered_category_posts = Post.objects.all()
         if form.cleaned_data.get("category"):
             filtered_category_posts = filtered_category_posts.filter(
-                category=form.cleaned_data.get("category")).order_by('published_date').distinct()
+                category=form.cleaned_data.get("category")).order_by('published_date').distinct().annotate(
+                avg_rating=Round(Avg('rating__value'), 2)).order_by('published_date')
         if form.cleaned_data.get("tag"):
             filtered_category_posts = filtered_category_posts.filter(tag__in=form.cleaned_data.get("tag")).order_by(
-                'published_date').distinct()
+                'published_date').distinct().annotate(avg_rating=Round(Avg('rating__value'), 2)).order_by(
+                'published_date')
         context['posts'] = filtered_category_posts
-        return self.render_to_response(context)
+        render_200 = self.render_to_response(context)
+        render_200.status_code = 200
+        return render_200
 
 
 class TagCreateView(CreateView):
@@ -76,18 +79,28 @@ class PostCreateView(CreateView):
     template_name = 'blog/post_edit.html'
     success_url = reverse_lazy('post_list')
 
-    def form_valid(self, form, *args, **kwargs):
-        post = form.save(commit=False)
-        post.author = self.request.user
-        post.published_date = timezone.now()
-        post.save()
-        form.save_m2m()
-        return super().form_valid(form)
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            form = PostForm(request.POST)
+            if form.is_valid():
+                post = form.save(commit=False)
+                post.published_date = timezone.now()
+                post.author = request.user
+                post.save()
+                form.save_m2m()
+                posts = Post.objects.annotate(avg_rating=Round(Avg('rating__value'), 2)).order_by('published_date')
+                return render(request, 'blog/post_list.html', {'posts': posts, 'form': FilterForm}, status=200)
+            else:
+                error_list = []
+                for error in form.errors.as_data():
+                    error_list.append(f'Field {error} is unvalid')
+                return render(request, 'blog/post_edit.html', {'error_list': error_list}, status=400)
 
-    def get_context_data(self, **kwargs):
-        context = super(PostCreateView, self).get_context_data(**kwargs)
-        context['title'] = 'Create a new post'
-        return context
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect(reverse('admin:index'))
+        else:
+            return render(request, 'blog/post_edit.html', {'title': 'Create a new post'})
 
 
 class PostUpdateView(UpdateView):
